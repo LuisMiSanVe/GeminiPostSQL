@@ -284,27 +284,41 @@ namespace AiPostgreWinForms
 
                             request.AddJsonBody(jsonstring);
                             // Sends the request to the service
-                            var response = Client.Post(request);
-                            var resp = JsonDocument.Parse(response.Content);
-                            // It extracts the AI's response from the 'Text' field                                                                                             and I remove the SQL Code style the AI adds
-                            string generatedSql = resp.RootElement.GetProperty("candidates")[0].GetProperty("content").GetProperty("parts")[0].GetProperty("text").GetString().Replace("```sql", "").Replace("```", "");
-                            tb_aiquery.Text = generatedSql;
-
+                            string generatedSql = "";
+                            try
+                            {
+                                var response = Client.Post(request);
+                                var resp = JsonDocument.Parse(response.Content);
+                                // It extracts the AI's response from the 'Text' field                                                                                             and I remove the SQL Code style the AI adds
+                                generatedSql = resp.RootElement.GetProperty("candidates")[0].GetProperty("content").GetProperty("parts")[0].GetProperty("text").GetString().Replace("```sql", "").Replace("```", "");
+                                tb_aiquery.Text = generatedSql;
+                            }
+                            catch (HttpRequestException)
+                            {
+                                MessageBox.Show("The provided Gemini API Key has failed to access the endpoint, make sure the API Key is functional","API Key failed",MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                gb_key.Invoke((MethodInvoker)(() =>
+                                {
+                                    btn_keysettings_Click(null, null);
+                                }));
+                            }
                             // Disables the loading screen
                             gb_loading.Visible = false;
                             gb_loading.Size = new Size(1, 1);
                             gb_loading.Location = new Point(0, 0);
                             try
                             {
-                                var resultBBDD = new NpgsqlCommand(generatedSql, connection).ExecuteReader();
-                                DataTable dt = new DataTable();
-                                dt.Load(resultBBDD);
-
-                                // Loads the result in the UI Thread
-                                dgv_airesult.Invoke((MethodInvoker)(() =>
+                                if (generatedSql != "")
                                 {
-                                    dgv_airesult.DataSource = dt;
-                                }));
+                                    var resultBBDD = new NpgsqlCommand(generatedSql, connection).ExecuteReader();
+                                    DataTable dt = new DataTable();
+                                    dt.Load(resultBBDD);
+
+                                    // Loads the result in the UI Thread
+                                    dgv_airesult.Invoke((MethodInvoker)(() =>
+                                    {
+                                        dgv_airesult.DataSource = dt;
+                                    }));
+                                }
 
                                 connection.Close();
                             }
