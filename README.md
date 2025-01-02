@@ -34,9 +34,9 @@ Simply put that data you just got into the setting windows in the program.
 ## 📖 About the WinForms program
 The interface have a few buttons, being <img src="https://github.com/LuisMiSanVe/GeminiPostSQL/blob/main/AiPostgreWinForms/Resources/key.png" width="20" alt="API Key Settings"> and <img src="https://github.com/LuisMiSanVe/GeminiPostSQL/blob/main/AiPostgreWinForms/Resources/db.png" width="20" alt="Database Settings"> setting windows, for configuring the API Key and the database respectively and <img src="https://github.com/LuisMiSanVe/GeminiPostSQL/blob/main/AiPostgreWinForms/Resources/show.png" width="20" alt="Show SQL">/<img src="https://github.com/LuisMiSanVe/GeminiPostSQL/blob/main/AiPostgreWinForms/Resources/hide.png" width="20" alt="Hide SQL"> to show or hide the AI's generated query.
 
-When you click 'Save' in the Database Settings Window or in the API Key Settings Window (if the 'Remember' box is checked) a file will create in the internal folder of the program so the next time the program is started, all this data gets loaded automaticly.
+When you click 'Save' in the Database Settings Window or in the API Key Settings Window (if the 'Remember' box is checked) a file will be created in the internal folder of the program so the next time the program is started, all this data gets loaded automaticly.
 > [!WARNING]
-> Be aware of that this files are not encrypted for the moment, so any unwanted person could access to them.
+> Be aware of that these files are not encrypted for the moment, so any unwanted person could access to them.
 
 **Natural Language to SQL Translation Method:**  
 This method maps the database structure into a JSON that Gemini analyzes to create an SQL query, which is then run by the PostgreSQL Server, returning the requested data.  
