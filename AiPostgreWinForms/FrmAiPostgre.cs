@@ -53,7 +53,14 @@ namespace AiPostgreWinForms
         private void llbl_github_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             // Opens default browser with the Github profile
-            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo { FileName = "https://github.com/LuisMiSanVe", UseShellExecute = true });
+            try
+            {
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo { FileName = "https://github.com/LuisMiSanVe", UseShellExecute = true });
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("The following error happened while trying to open your default browser: " + ex.Message,"Error while opening your default internet browser",MessageBoxButtons.OK, MessageBoxIcon.Error);    
+            }
         }
 
         private void btn_showquery_Click(object sender, EventArgs e)
@@ -114,6 +121,8 @@ namespace AiPostgreWinForms
             {
                 // Saves the value and closes the settings
                 apikey = tx_apikey.Text;
+                if (ckbx_remember.Checked)
+                    File.WriteAllText("apisettings.conf", apikey);
 
                 gb_key.Visible = false;
 
@@ -191,121 +200,128 @@ namespace AiPostgreWinForms
 
         private void btn_send_Click(object sender, EventArgs e)
         {
-            if (tb_userrequest.Text != "" && tb_userrequest.ForeColor != Color.Gray)
+            try
             {
-                // Enables the loading screen
-                gb_loading.Size = new Size(891, 709);
-                gb_loading.Location = new Point(-10, -40);
-                gb_loading.Visible = true;
-                var thread = new Thread(() =>
+                if (tb_userrequest.Text != "" && tb_userrequest.ForeColor != Color.Gray)
                 {
-                    // Connects to the database
-                    var connection = new NpgsqlConnection(database);
-
-                    if (connection != null)
+                    // Enables the loading screen
+                    gb_loading.Size = new Size(891, 709);
+                    gb_loading.Location = new Point(-10, -40);
+                    gb_loading.Visible = true;
+                    var thread = new Thread(() =>
                     {
-                        connection.Open();
+                        // Connects to the database
+                        var connection = new NpgsqlConnection(database);
 
-                        // OBTAIN DB
-                        // Tables
-                        var tablesDB = new NpgsqlCommand("SELECT CONCAT(table_schema, '.', table_name) AS full_table_name " +
-                                                         "FROM information_schema.tables WHERE table_type = 'BASE TABLE' AND table_name NOT LIKE 'pg_%' AND table_name NOT LIKE 'sql_%' " +
-                                                         "ORDER BY full_table_name;", connection).ExecuteReader();
-                        // Table           Column(Type)
-                        Dictionary<string, List<string>> tables = new Dictionary<string, List<string>>();
-
-                        while (tablesDB.Read())
+                        if (connection != null)
                         {
-                            if (!tables.ContainsKey(tablesDB.GetString(0)))
-                                //         Name                   Columns
-                                tables.Add(tablesDB.GetString(0), null);
-                        }
-                        tablesDB.Close();
-                        // Columns
-                        foreach (string tableName in tables.Keys)
-                        {
-                            var columnsDB = new NpgsqlCommand("SELECT c.column_name, c.data_type, CASE WHEN tc.constraint_type = 'PRIMARY KEY' THEN 'PK' WHEN tc.constraint_type = 'FOREIGN KEY' THEN 'FK' ELSE '' END AS key_type " +
-                                                              "FROM information_schema.columns c " +
-                                                              "LEFT JOIN information_schema.key_column_usage kcu ON c.table_schema = kcu.table_schema AND c.table_name = kcu.table_name AND c.column_name = kcu.column_name " +
-                                                              "LEFT JOIN information_schema.table_constraints tc ON kcu.constraint_name = tc.constraint_name AND kcu.table_schema = tc.table_schema AND kcu.table_name = tc.table_name " +
-                                                              "WHERE c.table_schema = '" + tableName.Substring(0, tableName.IndexOf('.')) + "' AND c.table_name = '" + tableName.Remove(0, tableName.IndexOf('.') + 1) + "'" +
-                                                              "ORDER BY c.column_name;", connection).ExecuteReader();
+                            connection.Open();
 
-                            List<string> columns = new List<string>();
+                            // OBTAIN DB
+                            // Tables
+                            var tablesDB = new NpgsqlCommand("SELECT CONCAT(table_schema, '.', table_name) AS full_table_name " +
+                                                             "FROM information_schema.tables WHERE table_type = 'BASE TABLE' AND table_name NOT LIKE 'pg_%' AND table_name NOT LIKE 'sql_%' " +
+                                                             "ORDER BY full_table_name;", connection).ExecuteReader();
+                            // Table           Column(Type)
+                            Dictionary<string, List<string>> tables = new Dictionary<string, List<string>>();
 
-                            while (columnsDB.Read())
+                            while (tablesDB.Read())
                             {
-                                string columnInfo = columnsDB.GetString(0) + "(" + columnsDB.GetString(1) + ")";
-                                if (!columnsDB.GetString(2).Equals(""))
-                                    columnInfo = columnsDB.GetString(0) + "(" + columnsDB.GetString(1) + ") (" + columnsDB.GetString(2) + ")";
-
-                                if (!columns.Contains(columnInfo))
-                                {   //      Name(Type)(Key)
-                                    columns.Add(columnInfo);
-
-                                    tables[tableName] = columns;
-                                }
+                                if (!tables.ContainsKey(tablesDB.GetString(0)))
+                                    //         Name                   Columns
+                                    tables.Add(tablesDB.GetString(0), null);
                             }
-                            columnsDB.Close();
-                        }
-                        var opcions = new JsonSerializerOptions
-                        {
-                            WriteIndented = true // JSON format
-                        };
-
-                        string json = System.Text.Json.JsonSerializer.Serialize(tables, opcions);
-
-                        // Creates context to modify AI's behavior
-                        string context = "You're a database assistant, I'll send you requests and you'll return a PostgeSQL query to do my request and if what I request can't be found on the database, tell me, but don't use more words. " +
-                                         "This is the database: " +
-                                         json +
-                                         "\nAnd this is my request: ";
-
-                        // I create the request
-                        var Client = new RestClient(endpoint);
-                        var request = new RestRequest(uri + apikey, Method.Post);
-                        request.AddHeader("Content-Type", "application/json");
-
-                        var body = new AIRequest();
-                        body.contents = new Content[] { new Content() { parts = new Part[] { new Part() { text = context + tb_userrequest.Text } } } };
-
-                        var jsonstring = JsonConvert.SerializeObject(body);
-
-                        request.AddJsonBody(jsonstring);
-                        // Sends the request to the service
-                        var response = Client.Post(request);
-                        var resp = JsonDocument.Parse(response.Content);
-                        // It extracts the AI's response from the 'Text' field                                                                                             and I remove the SQL Code style the AI adds
-                        string generatedSql = resp.RootElement.GetProperty("candidates")[0].GetProperty("content").GetProperty("parts")[0].GetProperty("text").GetString().Replace("```sql", "").Replace("```", "");
-                        tb_aiquery.Text = generatedSql;
-
-                        // Disables the loading screen
-                        gb_loading.Visible = false;
-                        gb_loading.Size = new Size(1, 1);
-                        gb_loading.Location = new Point(0, 0);
-                        try
-                        {
-                            var resultBBDD = new NpgsqlCommand(generatedSql, connection).ExecuteReader();
-                            DataTable dt = new DataTable();
-                            dt.Load(resultBBDD);
-
-                            // Loads the result in the UI Thread
-                            dgv_airesult.Invoke((MethodInvoker)(() =>
+                            tablesDB.Close();
+                            // Columns
+                            foreach (string tableName in tables.Keys)
                             {
-                                dgv_airesult.DataSource = dt;
-                            }));
+                                var columnsDB = new NpgsqlCommand("SELECT c.column_name, c.data_type, CASE WHEN tc.constraint_type = 'PRIMARY KEY' THEN 'PK' WHEN tc.constraint_type = 'FOREIGN KEY' THEN 'FK' ELSE '' END AS key_type " +
+                                                                  "FROM information_schema.columns c " +
+                                                                  "LEFT JOIN information_schema.key_column_usage kcu ON c.table_schema = kcu.table_schema AND c.table_name = kcu.table_name AND c.column_name = kcu.column_name " +
+                                                                  "LEFT JOIN information_schema.table_constraints tc ON kcu.constraint_name = tc.constraint_name AND kcu.table_schema = tc.table_schema AND kcu.table_name = tc.table_name " +
+                                                                  "WHERE c.table_schema = '" + tableName.Substring(0, tableName.IndexOf('.')) + "' AND c.table_name = '" + tableName.Remove(0, tableName.IndexOf('.') + 1) + "'" +
+                                                                  "ORDER BY c.column_name;", connection).ExecuteReader();
 
-                            connection.Close();
+                                List<string> columns = new List<string>();
+
+                                while (columnsDB.Read())
+                                {
+                                    string columnInfo = columnsDB.GetString(0) + "(" + columnsDB.GetString(1) + ")";
+                                    if (!columnsDB.GetString(2).Equals(""))
+                                        columnInfo = columnsDB.GetString(0) + "(" + columnsDB.GetString(1) + ") (" + columnsDB.GetString(2) + ")";
+
+                                    if (!columns.Contains(columnInfo))
+                                    {   //      Name(Type)(Key)
+                                        columns.Add(columnInfo);
+
+                                        tables[tableName] = columns;
+                                    }
+                                }
+                                columnsDB.Close();
+                            }
+                            var opcions = new JsonSerializerOptions
+                            {
+                                WriteIndented = true // JSON format
+                            };
+
+                            string json = System.Text.Json.JsonSerializer.Serialize(tables, opcions);
+
+                            // Creates context to modify AI's behavior
+                            string context = "You're a database assistant, I'll send you requests and you'll return a PostgeSQL query to do my request and if what I request can't be found on the database, tell me, but don't use more words. " +
+                                             "This is the database: " +
+                                             json +
+                                             "\nAnd this is my request: ";
+
+                            // I create the request
+                            var Client = new RestClient(endpoint);
+                            var request = new RestRequest(uri + apikey, Method.Post);
+                            request.AddHeader("Content-Type", "application/json");
+
+                            var body = new AIRequest();
+                            body.contents = new Content[] { new Content() { parts = new Part[] { new Part() { text = context + tb_userrequest.Text } } } };
+
+                            var jsonstring = JsonConvert.SerializeObject(body);
+
+                            request.AddJsonBody(jsonstring);
+                            // Sends the request to the service
+                            var response = Client.Post(request);
+                            var resp = JsonDocument.Parse(response.Content);
+                            // It extracts the AI's response from the 'Text' field                                                                                             and I remove the SQL Code style the AI adds
+                            string generatedSql = resp.RootElement.GetProperty("candidates")[0].GetProperty("content").GetProperty("parts")[0].GetProperty("text").GetString().Replace("```sql", "").Replace("```", "");
+                            tb_aiquery.Text = generatedSql;
+
+                            // Disables the loading screen
+                            gb_loading.Visible = false;
+                            gb_loading.Size = new Size(1, 1);
+                            gb_loading.Location = new Point(0, 0);
+                            try
+                            {
+                                var resultBBDD = new NpgsqlCommand(generatedSql, connection).ExecuteReader();
+                                DataTable dt = new DataTable();
+                                dt.Load(resultBBDD);
+
+                                // Loads the result in the UI Thread
+                                dgv_airesult.Invoke((MethodInvoker)(() =>
+                                {
+                                    dgv_airesult.DataSource = dt;
+                                }));
+
+                                connection.Close();
+                            }
+                            catch (Exception)
+                            {
+                                MessageBox.Show("An error was thrown while running the generated query (" + generatedSql + ")");
+                                if (!btn_tweak.Visible)
+                                    btn_showquery_Click(sender, e);
+                            }
                         }
-                        catch (Exception)
-                        {
-                            MessageBox.Show("An error was thrown while running the generated query (" + generatedSql + ")");
-                            if (!btn_tweak.Visible)
-                                btn_showquery_Click(sender, e);
-                        }
-                    }
-                });
-                thread.Start();
+                    });
+                    thread.Start();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("The following error happened while trying to get response of Gemini AI or PostgreSQL Server: " + ex.Message, "Error while getting response", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
