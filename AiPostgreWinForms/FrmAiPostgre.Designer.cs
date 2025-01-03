@@ -43,12 +43,14 @@
             pcbx_icon = new PictureBox();
             il_showimages = new ImageList(components);
             gb_key = new GroupBox();
+            btn_keyback = new Button();
             btn_saveapi = new Button();
             ckbx_showApi = new CheckBox();
             ckbx_remember = new CheckBox();
             lbl_key = new Label();
             tx_apikey = new TextBox();
             gb_database = new GroupBox();
+            btn_dbback = new Button();
             lbl_validatedb = new Label();
             chbx_dbpass = new CheckBox();
             btn_savedb = new Button();
@@ -63,9 +65,9 @@
             tt_hover = new ToolTip(components);
             btn_tweak = new Button();
             gb_loading = new GroupBox();
+            pb_loading = new ProgressBar();
+            lbl_loadstatus = new Label();
             pcbx_loadinggif = new PictureBox();
-            btn_dbback = new Button();
-            btn_keyback = new Button();
             ((System.ComponentModel.ISupportInitialize)dgv_airesult).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pcbx_icon).BeginInit();
             gb_key.SuspendLayout();
@@ -232,6 +234,16 @@
             gb_key.Text = "API Key Settings";
             gb_key.Visible = false;
             // 
+            // btn_keyback
+            // 
+            btn_keyback.Location = new Point(21, 174);
+            btn_keyback.Name = "btn_keyback";
+            btn_keyback.Size = new Size(112, 34);
+            btn_keyback.TabIndex = 6;
+            btn_keyback.Text = "Back";
+            btn_keyback.UseVisualStyleBackColor = true;
+            btn_keyback.Click += btn_keyback_Click;
+            // 
             // btn_saveapi
             // 
             btn_saveapi.Location = new Point(359, 170);
@@ -310,6 +322,17 @@
             gb_database.TabStop = false;
             gb_database.Text = "Postgre's Server Settings";
             gb_database.Visible = false;
+            // 
+            // btn_dbback
+            // 
+            btn_dbback.Location = new Point(22, 343);
+            btn_dbback.Margin = new Padding(4, 5, 4, 5);
+            btn_dbback.Name = "btn_dbback";
+            btn_dbback.Size = new Size(107, 38);
+            btn_dbback.TabIndex = 11;
+            btn_dbback.Text = "Back";
+            btn_dbback.UseVisualStyleBackColor = true;
+            btn_dbback.Click += btn_dbback_Click;
             // 
             // lbl_validatedb
             // 
@@ -431,6 +454,8 @@
             // gb_loading
             // 
             gb_loading.BackColor = Color.White;
+            gb_loading.Controls.Add(pb_loading);
+            gb_loading.Controls.Add(lbl_loadstatus);
             gb_loading.Controls.Add(pcbx_loadinggif);
             gb_loading.Location = new Point(0, 0);
             gb_loading.Name = "gb_loading";
@@ -439,6 +464,23 @@
             gb_loading.TabStop = false;
             gb_loading.Text = "Loading";
             gb_loading.Visible = false;
+            // 
+            // pb_loading
+            // 
+            pb_loading.Location = new Point(0, 669);
+            pb_loading.Name = "pb_loading";
+            pb_loading.Size = new Size(881, 30);
+            pb_loading.TabIndex = 2;
+            // 
+            // lbl_loadstatus
+            // 
+            lbl_loadstatus.AutoSize = true;
+            lbl_loadstatus.ForeColor = SystemColors.ControlText;
+            lbl_loadstatus.Location = new Point(744, 628);
+            lbl_loadstatus.Name = "lbl_loadstatus";
+            lbl_loadstatus.Size = new Size(88, 25);
+            lbl_loadstatus.TabIndex = 1;
+            lbl_loadstatus.Text = "Loading...";
             // 
             // pcbx_loadinggif
             // 
@@ -449,27 +491,6 @@
             pcbx_loadinggif.Size = new Size(548, 607);
             pcbx_loadinggif.TabIndex = 0;
             pcbx_loadinggif.TabStop = false;
-            // 
-            // btn_dbback
-            // 
-            btn_dbback.Location = new Point(22, 343);
-            btn_dbback.Margin = new Padding(4, 5, 4, 5);
-            btn_dbback.Name = "btn_dbback";
-            btn_dbback.Size = new Size(107, 38);
-            btn_dbback.TabIndex = 11;
-            btn_dbback.Text = "Back";
-            btn_dbback.UseVisualStyleBackColor = true;
-            btn_dbback.Click += btn_dbback_Click;
-            // 
-            // btn_keyback
-            // 
-            btn_keyback.Location = new Point(21, 174);
-            btn_keyback.Name = "btn_keyback";
-            btn_keyback.Size = new Size(112, 34);
-            btn_keyback.TabIndex = 6;
-            btn_keyback.Text = "Back";
-            btn_keyback.UseVisualStyleBackColor = true;
-            btn_keyback.Click += btn_keyback_Click;
             // 
             // FrmAiPostgre
             // 
@@ -498,6 +519,7 @@
             Name = "FrmAiPostgre";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "GeminiPostSQL - AI PostgreSQL Assistant";
+            FormClosing += FrmAiPostgre_FormClosing;
             Load += FrmAiPostgre_Load;
             ((System.ComponentModel.ISupportInitialize)dgv_airesult).EndInit();
             ((System.ComponentModel.ISupportInitialize)pcbx_icon).EndInit();
@@ -506,6 +528,7 @@
             gb_database.ResumeLayout(false);
             gb_database.PerformLayout();
             gb_loading.ResumeLayout(false);
+            gb_loading.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)pcbx_loadinggif).EndInit();
             ResumeLayout(false);
             PerformLayout();
@@ -548,5 +571,7 @@
         private Label lbl_validatedb;
         private Button btn_dbback;
         private Button btn_keyback;
+        private Label lbl_loadstatus;
+        private ProgressBar pb_loading;
     }
 }

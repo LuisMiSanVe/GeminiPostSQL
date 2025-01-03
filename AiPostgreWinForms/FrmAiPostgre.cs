@@ -59,7 +59,7 @@ namespace AiPostgreWinForms
             }
             catch (Exception ex)
             {
-                MessageBox.Show("The following error happened while trying to open your default browser: " + ex.Message,"Error while opening your default internet browser",MessageBoxButtons.OK, MessageBoxIcon.Error);    
+                MessageBox.Show("The following error happened while trying to open your default browser: " + ex.Message, "Error while opening your default internet browser", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -201,13 +201,14 @@ namespace AiPostgreWinForms
         private void btn_send_Click(object sender, EventArgs e)
         {
             try
-            {
+            {   // You can't use it unless you have something written
                 if (tb_userrequest.Text != "" && tb_userrequest.ForeColor != Color.Gray)
                 {
                     // Enables the loading screen
                     gb_loading.Size = new Size(891, 709);
                     gb_loading.Location = new Point(-10, -40);
                     gb_loading.Visible = true;
+                    lbl_loadstatus.Text = "Mapping...";
                     var thread = new Thread(() =>
                     {
                         // Connects to the database
@@ -218,6 +219,20 @@ namespace AiPostgreWinForms
                             connection.Open();
 
                             // OBTAIN DB
+                            // Get the quantity of tables and columns for the loading bar
+                            var tableQuantity = new NpgsqlCommand("SELECT (" +
+                                                                  "SELECT COUNT(*) FROM information_schema.tables " +
+                                                                  "WHERE table_type = 'BASE TABLE' AND table_name NOT LIKE 'pg_%' AND table_name NOT LIKE 'sql_%') +" +
+                                                                  "(SELECT COUNT(*) FROM information_schema.columns " +
+                                                                  "WHERE table_schema NOT LIKE 'pg_%' AND table_name NOT LIKE 'sql_%')", connection).ExecuteReader();
+                            while (tableQuantity.Read())
+                            {
+                                pb_loading.Invoke((MethodInvoker)(() =>
+                                {
+                                    pb_loading.Maximum = tableQuantity.GetInt32(0);
+                                }));
+                            }
+                            tableQuantity.Close();
                             // Tables
                             var tablesDB = new NpgsqlCommand("SELECT CONCAT(table_schema, '.', table_name) AS full_table_name " +
                                                              "FROM information_schema.tables WHERE table_type = 'BASE TABLE' AND table_name NOT LIKE 'pg_%' AND table_name NOT LIKE 'sql_%' " +
@@ -228,8 +243,16 @@ namespace AiPostgreWinForms
                             while (tablesDB.Read())
                             {
                                 if (!tables.ContainsKey(tablesDB.GetString(0)))
+                                {
                                     //         Name                   Columns
                                     tables.Add(tablesDB.GetString(0), null);
+                                    // Fills the loading bar
+                                    pb_loading.Invoke((MethodInvoker)(() =>
+                                    {
+                                        if (pb_loading.Value < pb_loading.Maximum)
+                                            pb_loading.Value++;
+                                    }));
+                                }
                             }
                             tablesDB.Close();
                             // Columns
@@ -255,10 +278,23 @@ namespace AiPostgreWinForms
                                         columns.Add(columnInfo);
 
                                         tables[tableName] = columns;
+                                        // Fills the loading bar
+                                        pb_loading.Invoke((MethodInvoker)(() =>
+                                        {
+                                            if (pb_loading.Value < pb_loading.Maximum)
+                                                pb_loading.Value++;
+                                        }));
                                     }
                                 }
                                 columnsDB.Close();
                             }
+                            // Finish the loading bar
+                            pb_loading.Invoke((MethodInvoker)(() =>
+                            {
+                                int difference = pb_loading.Maximum - pb_loading.Value;
+                                pb_loading.Value += difference;
+                            }));
+
                             var opcions = new JsonSerializerOptions
                             {
                                 WriteIndented = true // JSON format
@@ -285,6 +321,10 @@ namespace AiPostgreWinForms
                             request.AddJsonBody(jsonstring);
                             // Sends the request to the service
                             string generatedSql = "";
+                            lbl_loadstatus.Invoke((MethodInvoker)(() =>
+                            {
+                                lbl_loadstatus.Text = "Generating...";
+                            }));
                             try
                             {
                                 var response = Client.Post(request);
@@ -293,18 +333,21 @@ namespace AiPostgreWinForms
                                 generatedSql = resp.RootElement.GetProperty("candidates")[0].GetProperty("content").GetProperty("parts")[0].GetProperty("text").GetString().Replace("```sql", "").Replace("```", "");
                                 tb_aiquery.Text = generatedSql;
                             }
-                            catch (HttpRequestException)
+                            catch (HttpRequestException ex)
                             {
-                                MessageBox.Show("The provided Gemini API Key has failed to access the endpoint, make sure the API Key is functional","API Key failed",MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                MessageBox.Show("The provided Gemini API Key has failed to access the endpoint, make sure the API Key or Service is functional", "API Key failed (" + ex.StatusCode + ")", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                                 gb_key.Invoke((MethodInvoker)(() =>
                                 {
                                     btn_keysettings_Click(null, null);
                                 }));
                             }
                             // Disables the loading screen
-                            gb_loading.Visible = false;
-                            gb_loading.Size = new Size(1, 1);
-                            gb_loading.Location = new Point(0, 0);
+                            gb_loading.Invoke((MethodInvoker)(() =>
+                            {
+                                gb_loading.Visible = false;
+                                gb_loading.Size = new Size(1, 1);
+                                gb_loading.Location = new Point(0, 0);
+                            }));
                             try
                             {
                                 if (generatedSql != "")
@@ -324,9 +367,12 @@ namespace AiPostgreWinForms
                             }
                             catch (Exception)
                             {
-                                MessageBox.Show("An error was thrown while running the generated query (" + generatedSql + ")");
+                                MessageBox.Show("An error was thrown while running the generated query (" + generatedSql + ")", "The query failed to run in the PostgreSQL Server", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                 if (!btn_tweak.Visible)
-                                    btn_showquery_Click(sender, e);
+                                    btn_showquery.Invoke((MethodInvoker)(() =>
+                                    {
+                                        btn_showquery_Click(sender, e);
+                                    }));
                             }
                         }
                     });
@@ -372,7 +418,7 @@ namespace AiPostgreWinForms
                     }
                     catch (Exception)
                     {
-                        MessageBox.Show("An error was thrown while running the query (" + tb_aiquery.Text + ")");
+                        MessageBox.Show("An error was thrown while running the query (" + tb_aiquery.Text + ")", "The query failed to run in the PostgreSQL Server", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
             }
@@ -430,6 +476,20 @@ namespace AiPostgreWinForms
             dgv_airesult.Enabled = true;
             llbl_github.Enabled = true;
             btn_tweak.Enabled = true;
+        }
+
+        private void FrmAiPostgre_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            // If the user tries to close the program while it's loading...
+            if (gb_loading.Visible == true)
+            {   // Checks for verification
+                string tokenwaste = "";
+                if (lbl_loadstatus.Text.Contains("Generating..."))
+                    tokenwaste = "(You'll waste the used Tokens!)";
+                var result = MessageBox.Show("The program is in the " + lbl_loadstatus.Text.Replace("...", "") + " process, you do want to exit? " + tokenwaste, "Exit Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                if (result == DialogResult.No)
+                    e.Cancel = true;
+            }
         }
     }
 }
