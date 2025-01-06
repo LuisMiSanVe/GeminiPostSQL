@@ -11,7 +11,7 @@
 > Esta es la versión de WinForms pensada para ser usada como cliente. Hay una versión de [REST API](https://github.com/LuisMiSanVe/AIPostgreAssistant_API/tree/spanish) pensada para su uso en servidores o clientes con la interfaz de Swagger.
 
 Este WinForms usa la IA de Google 'Gemini 1.5 Flash' para generar consultas a bases de datos PostgreSQL.  
-La IA convierte lenguaje natural a consultas SQL usando un método con sus ventajas y desvenajas.
+La IA convierte lenguaje natural a consultas SQL usando un método con sus ventajas y desventajas.
 
 ## 📋 Prerequisitos
 
