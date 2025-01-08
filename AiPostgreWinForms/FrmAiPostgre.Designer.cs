@@ -136,6 +136,7 @@
             tb_aiquery.Size = new Size(313, 31);
             tb_aiquery.TabIndex = 6;
             tb_aiquery.Visible = false;
+            tb_aiquery.KeyDown += tb_aiquery_KeyDown;
             // 
             // dgv_airesult
             // 
@@ -449,7 +450,6 @@
             btn_tweak.UseVisualStyleBackColor = true;
             btn_tweak.Visible = false;
             btn_tweak.Click += btn_tweak_Click;
-            btn_tweak.KeyDown += btn_tweak_KeyDown;
             // 
             // gb_loading
             // 

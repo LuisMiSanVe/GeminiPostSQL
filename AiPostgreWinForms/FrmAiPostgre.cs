@@ -330,7 +330,7 @@ namespace AiPostgreWinForms
                                 var response = Client.Post(request);
                                 var resp = JsonDocument.Parse(response.Content);
                                 // It extracts the AI's response from the 'Text' field                                                                                      and I remove the SQL Code style the AI adds
-                                generatedSql = resp.RootElement.GetProperty("candidates")[0].GetProperty("content").GetProperty("parts")[0].GetProperty("text").GetString().Replace("```sql", "").Replace("```", "").Replace('\n',' ').Trim();
+                                generatedSql = resp.RootElement.GetProperty("candidates")[0].GetProperty("content").GetProperty("parts")[0].GetProperty("text").GetString().Replace("```sql", "").Replace("```", "").Replace('\n', ' ').Trim();
                                 tb_aiquery.Text = generatedSql;
                             }
                             catch (HttpRequestException ex)
@@ -424,12 +424,6 @@ namespace AiPostgreWinForms
             }
         }
 
-        private void btn_tweak_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Enter)
-                btn_tweak_Click(sender, e);
-        }
-
         private void tb_userrequest_Enter(object sender, EventArgs e)
         {
             if (tb_userrequest.ForeColor == Color.Gray)
@@ -490,6 +484,12 @@ namespace AiPostgreWinForms
                 if (result == DialogResult.No)
                     e.Cancel = true;
             }
+        }
+
+        private void tb_aiquery_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+                btn_tweak_Click(sender, e);
         }
     }
 }
