@@ -329,8 +329,8 @@ namespace AiPostgreWinForms
                             {
                                 var response = Client.Post(request);
                                 var resp = JsonDocument.Parse(response.Content);
-                                // It extracts the AI's response from the 'Text' field                                                                                             and I remove the SQL Code style the AI adds
-                                generatedSql = resp.RootElement.GetProperty("candidates")[0].GetProperty("content").GetProperty("parts")[0].GetProperty("text").GetString().Replace("```sql", "").Replace("```", "");
+                                // It extracts the AI's response from the 'Text' field                                                                                      and I remove the SQL Code style the AI adds
+                                generatedSql = resp.RootElement.GetProperty("candidates")[0].GetProperty("content").GetProperty("parts")[0].GetProperty("text").GetString().Replace("```sql", "").Replace("```", "").Replace('\n',' ').Trim();
                                 tb_aiquery.Text = generatedSql;
                             }
                             catch (HttpRequestException ex)
