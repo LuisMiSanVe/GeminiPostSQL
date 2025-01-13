@@ -44,6 +44,16 @@ Al hacer clic en 'Save' en la pantalla de Configuración de la  Base de  Datos o
 Este método mapea la estructura de la base de datos en un JSON que Gemini analiza para crear una consulta SQL, la cual es ejecutada por el servidor PostgreSQL directamente.  
 Ya que este método no mapea los valores de la base de datos el uso de tokens es menor, y los datos que devuelve son mas fiables pues es el mismo Servidor el que los devuelve. Sin embargo, no evita completamente los errores que cometa la IA. A veces, la consulta SQL fallará debido a que la IA se inventa columnas que no existen, en ese caso deberás comprobar la consulta generada para que identifiques el fallo.
 
+## 🚀 Lanzamientos
+Una versión será lanzada solo cuando se cumplan los siguientes puntos:
+- Una nueva versión saldrá cuando algún cambio importante haya sido agregado.
+Si algún error se arregla en el respositorio, en vez de lanzar una versión con el arreglo inmediatamente, se esperará una semana desde que se hizo el arreglo para sacarla.
+  - Razón: Este tiempo de espera permite la inclusion de arreglos de otros bug que puedan aparecer, reduciendo la necesidad de sacar multiples versiones consecutivamente para arreglos individuales.
+  - Excepción: En casos que se presente un error crítico que afecte al funcionamiento del proyecto, un lanzamiento inmediato puede ser considerado.
+
+El número de la versión seguirá este formato: \
+\[Añadido Importante\].\[Añadido Menor\].\[Arreglo de Errores\]
+
 ## 💻 Tecnologías usadas
 - Lenguaje de programación: [C#](https://dotnet.microsoft.com/en-us/languages/csharp)
 - Framework: [.Net](https://dotnet.microsoft.com/en-us/learn/dotnet/what-is-dotnet) 8.0 Framework
