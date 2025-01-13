@@ -42,6 +42,16 @@ When you click 'Save' in the Database Settings Window or in the API Key Settings
 This method maps the database structure into a JSON that Gemini analyzes to create an SQL query, which is then run by the PostgreSQL Server, returning the requested data.  
 Since this method does not map the database values, token usage is lower, and the data is more reliable because it comes directly from the PostgreSQL Server. However, it doesn't completely prevent AI-generated errors. Occasionally, the SQL query might fail due to non-existing columns, in which case you should check the generated query to detect the error.
 
+## 🚀 Releases
+The version will be released using these versioning policies:
+- A new version will drop when a major feature is added.
+When a bug is fixed in the repository, instead of releasing a new version immediately, we will wait one week from the date the fix was made.
+  - Reason: This waiting period allows for the inclusion of any additional bug fixes that may arise, reducing the need to release multiple consecutive versions for individual fixes.
+  - Exception: In critical cases where a bug severely impacts the functionality of the project, an immediate release might be considered.
+
+The version number will follow this format: \
+\[Major Feature\].\[Minor Feature\].\[Bug Fix\]
+
 ## 💻 Technologies Used
 - Programming Language: [C#](https://dotnet.microsoft.com/en-us/languages/csharp)
 - Framework: [.Net](https://dotnet.microsoft.com/en-us/learn/dotnet/what-is-dotnet) 8.0 Framework
