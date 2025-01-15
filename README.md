@@ -35,8 +35,8 @@ Simply put that data you just got into the setting windows in the program.
 The interface have a few buttons, being <img src="https://github.com/LuisMiSanVe/GeminiPostSQL/blob/main/AiPostgreWinForms/Resources/key.png" width="20" alt="API Key Settings"> and <img src="https://github.com/LuisMiSanVe/GeminiPostSQL/blob/main/AiPostgreWinForms/Resources/db.png" width="20" alt="Database Settings"> setting windows, for configuring the API Key and the database respectively and <img src="https://github.com/LuisMiSanVe/GeminiPostSQL/blob/main/AiPostgreWinForms/Resources/show.png" width="20" alt="Show SQL">/<img src="https://github.com/LuisMiSanVe/GeminiPostSQL/blob/main/AiPostgreWinForms/Resources/hide.png" width="20" alt="Hide SQL"> to show or hide the AI's generated query.
 
 When you click 'Save' in the Database Settings Window or in the API Key Settings Window (if the 'Remember' box is checked) a file will be created in the internal folder of the program so the next time the program is started, all this data gets loaded automaticly.
-> [!WARNING]
-> Be aware of that these files are not encrypted for the moment, so any unwanted person could access to them.
+> [!NOTE]
+> It haves encryption to the API Key and DB data configuration files using AES with a Specific System Based Method, where the AES Key is made with your system's specs, so if any unwanted person steals those files, they couldn't be decrypted, maintaining your sensitive data secure.
 
 **Natural Language to SQL Translation Method:**  
 This method maps the database structure into a JSON that Gemini analyzes to create an SQL query, which is then run by the PostgreSQL Server, returning the requested data.  
@@ -59,6 +59,7 @@ The version number will follow this format: \
   - [Npgsql](https://www.npgsql.org/) (8.0.5)
   - [RestSharp](https://restsharp.dev/) (112.1.0)
   - [Newtonsoft.Json](https://www.newtonsoft.com/json) (13.0.3)
+  - [System.Management](https://learn.microsoft.com/es-es/dotnet/api/system.management?view=netframework-1.1) (9.0.1)
 - Other:
   - [PostgreSQL](https://www.postgresql.org/) (16.3)
   - [pgAdmin 4](https://www.pgadmin.org/) (8.9)
