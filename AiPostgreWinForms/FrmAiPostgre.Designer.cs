@@ -476,7 +476,7 @@
             // 
             lbl_loadstatus.AutoSize = true;
             lbl_loadstatus.ForeColor = SystemColors.ControlText;
-            lbl_loadstatus.Location = new Point(744, 628);
+            lbl_loadstatus.Location = new Point(20, 628);
             lbl_loadstatus.Name = "lbl_loadstatus";
             lbl_loadstatus.Size = new Size(88, 25);
             lbl_loadstatus.TabIndex = 1;

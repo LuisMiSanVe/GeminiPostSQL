@@ -6,6 +6,9 @@ using System.Data;
 using System.Linq.Expressions;
 using System.Text.Json;
 using System.Text.RegularExpressions;
+using System.Management;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace AiPostgreWinForms
 {
@@ -19,6 +22,10 @@ namespace AiPostgreWinForms
         // Database Data
         public static string database = "";
 
+        // Encryption Data
+        public static string key;
+        public static string iv;
+
         public FrmAiPostgre()
         {
             InitializeComponent();
@@ -26,23 +33,41 @@ namespace AiPostgreWinForms
 
         private void FrmAiPostgre_Load(object sender, EventArgs e)
         {
+            // Creates the Encrytion Keys
+            if (GetMotherboardSerialNumber() != "")
+            {
+                key = GetMotherboardSerialNumber().Remove(6, GetMotherboardSerialNumber().Length - 6) + "12345678901234567890123456"; // Must be 32 bytes for AES-256
+                iv = GetMotherboardSerialNumber().Remove(6, GetMotherboardSerialNumber().Length - 6) + "1234567890"; // Must be 16 bytes for AES
+            }
+            else
+            {
+                MessageBox.Show("Because of the System Data wasn't gathered, which is necessary to the encryption method, to prevent further error and securuty breaches, all program's data will be erased.", "Encryption method fail response", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                if (File.Exists("apisettings.conf"))
+                    File.Delete("apisettings.conf");
+                if (File.Exists("dbsettings.conf"))
+                    File.Delete("dbsettings.conf");
+            }
+
             // Load saved API Key if remembered is checked
             if (File.Exists("apisettings.conf"))
             {
                 ckbx_remember.Checked = true;
-                tx_apikey.Text = File.ReadAllText("apisettings.conf");
+                tx_apikey.Text = Decrypt(File.ReadAllText("apisettings.conf"));
                 apikey = tx_apikey.Text;
             }
 
             // Load latest saved DB settings
             if (File.Exists("dbsettings.conf"))
             {
-                string dbsettings = File.ReadAllText("dbsettings.conf");
-                string[] settings = dbsettings.Split(';');
-                tx_ip.Text = settings[0].Substring(settings[0].IndexOf("=") + 1);
-                txt_db.Text = settings[3].Substring(settings[3].IndexOf("=") + 1);
-                txt_user.Text = settings[1].Substring(settings[1].IndexOf("=") + 1);
-                txt_pass.Text = settings[2].Substring(settings[2].IndexOf("=") + 1);
+                string dbsettings = Decrypt(File.ReadAllText("dbsettings.conf"));
+                if (dbsettings != "")
+                {
+                    string[] settings = dbsettings.Split(';');
+                    tx_ip.Text = settings[0].Substring(settings[0].IndexOf("=") + 1);
+                    txt_db.Text = settings[3].Substring(settings[3].IndexOf("=") + 1);
+                    txt_user.Text = settings[1].Substring(settings[1].IndexOf("=") + 1);
+                    txt_pass.Text = settings[2].Substring(settings[2].IndexOf("=") + 1);
+                }
                 database = dbsettings;
             }
             // Load text hints
@@ -59,7 +84,7 @@ namespace AiPostgreWinForms
             }
             catch (Exception ex)
             {
-                MessageBox.Show("The following error happened while trying to open your default browser: " + ex.Message, "Error while opening your default internet browser", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("The following error happened while trying to open your default browser:\r\n" + ex.Message, "Error while opening your default internet browser", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -122,7 +147,7 @@ namespace AiPostgreWinForms
                 // Saves the value and closes the settings
                 apikey = tx_apikey.Text;
                 if (ckbx_remember.Checked)
-                    File.WriteAllText("apisettings.conf", apikey);
+                    File.WriteAllText("apisettings.conf", Encrypt(apikey));
 
                 gb_key.Visible = false;
 
@@ -154,7 +179,7 @@ namespace AiPostgreWinForms
                     connection.Open();
                     connection.Close();
 
-                    File.WriteAllText("dbsettings.conf", database);
+                    File.WriteAllText("dbsettings.conf", Encrypt(database));
                     gb_database.Visible = false;
 
                     // Enables the functionality of the rest of the program
@@ -176,12 +201,7 @@ namespace AiPostgreWinForms
 
         private void ckbx_remember_CheckedChanged(object sender, EventArgs e)
         {
-            if (ckbx_remember.Checked)
-            {
-                MessageBox.Show("The API Key will be stored in your device and could be seen by unwanted people.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                File.WriteAllText("apisettings.conf", tx_apikey.Text);
-            }
-            else
+            if (!ckbx_remember.Checked)
                 File.Delete("apisettings.conf");
         }
 
@@ -209,6 +229,7 @@ namespace AiPostgreWinForms
                     gb_loading.Location = new Point(-10, -40);
                     gb_loading.Visible = true;
                     lbl_loadstatus.Text = "Mapping...";
+                    pb_loading.Value = 0; // Restart the bar value
                     var thread = new Thread(() =>
                     {
                         // Connects to the database
@@ -230,6 +251,7 @@ namespace AiPostgreWinForms
                                 pb_loading.Invoke((MethodInvoker)(() =>
                                 {
                                     pb_loading.Maximum = tableQuantity.GetInt32(0);
+                                    lbl_loadstatus.Text = "Mapping... (0/" + pb_loading.Maximum + ")";
                                 }));
                             }
                             tableQuantity.Close();
@@ -250,7 +272,10 @@ namespace AiPostgreWinForms
                                     pb_loading.Invoke((MethodInvoker)(() =>
                                     {
                                         if (pb_loading.Value < pb_loading.Maximum)
+                                        {
                                             pb_loading.Value++;
+                                            lbl_loadstatus.Text = "Mapping... (" + pb_loading.Value + "/" + pb_loading.Maximum + ")";
+                                        }
                                     }));
                                 }
                             }
@@ -282,7 +307,10 @@ namespace AiPostgreWinForms
                                         pb_loading.Invoke((MethodInvoker)(() =>
                                         {
                                             if (pb_loading.Value < pb_loading.Maximum)
+                                            {
                                                 pb_loading.Value++;
+                                                lbl_loadstatus.Text = "Mapping... (" + pb_loading.Value + "/" + pb_loading.Maximum + ")";
+                                            }
                                         }));
                                     }
                                 }
@@ -293,6 +321,7 @@ namespace AiPostgreWinForms
                             {
                                 int difference = pb_loading.Maximum - pb_loading.Value;
                                 pb_loading.Value += difference;
+                                lbl_loadstatus.Text = "Mapping... (" + pb_loading.Maximum + "/" + pb_loading.Maximum + ")";
                             }));
 
                             var opcions = new JsonSerializerOptions
@@ -341,6 +370,13 @@ namespace AiPostgreWinForms
                                     btn_keysettings_Click(null, null);
                                 }));
                             }
+                            catch (Exception ex) {
+                                MessageBox.Show("The provided Gemini API Key has failed to access the endpoint, make sure the API Key or Service is functional", "API Key failed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                gb_key.Invoke((MethodInvoker)(() =>
+                                {
+                                    btn_keysettings_Click(null, null);
+                                }));
+                            }
                             // Disables the loading screen
                             gb_loading.Invoke((MethodInvoker)(() =>
                             {
@@ -381,7 +417,7 @@ namespace AiPostgreWinForms
             }
             catch (Exception ex)
             {
-                MessageBox.Show("The following error happened while trying to get response of Gemini AI or PostgreSQL Server: " + ex.Message, "Error while getting response", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("The following error happened while trying to get response of Gemini AI or PostgreSQL Server:\r\n" + ex.Message, "Error while getting response", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -480,7 +516,7 @@ namespace AiPostgreWinForms
                 string tokenwaste = "";
                 if (lbl_loadstatus.Text.Contains("Generating..."))
                     tokenwaste = "(You'll waste the used Tokens!)";
-                var result = MessageBox.Show("The program is in the " + lbl_loadstatus.Text.Replace("...", "") + " process, you do want to exit? " + tokenwaste, "Exit Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                var result = MessageBox.Show("The program is in the " + lbl_loadstatus.Text.Remove(lbl_loadstatus.Text.IndexOf("."), lbl_loadstatus.Text.Length - lbl_loadstatus.Text.IndexOf(".")) + " process, you do want to exit? " + tokenwaste, "Exit Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                 if (result == DialogResult.No)
                     e.Cancel = true;
             }
@@ -490,6 +526,82 @@ namespace AiPostgreWinForms
         {
             if (e.KeyCode == Keys.Enter)
                 btn_tweak_Click(sender, e);
+        }
+
+        // Encryption methods
+        static string GetMotherboardSerialNumber()
+        {
+            return GetWmiProperty("Win32_BaseBoard", "SerialNumber");
+        }
+        static string GetWmiProperty(string className, string propertyName)
+        {
+            try
+            {
+                string result = string.Empty;
+                using (ManagementClass managementClass = new ManagementClass(className))
+                {
+                    foreach (ManagementObject obj in managementClass.GetInstances())
+                    {
+                        if (obj[propertyName] != null)
+                        {
+                            result = obj[propertyName].ToString();
+                            break;
+                        }
+                    }
+                }
+                return result;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("The system's data used in the verification couldn't be obtained:\r\n" + ex.Message, "System's data couldn't be obtained", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return "";
+            }
+        }
+        public static string Encrypt(string plainText)
+        {
+            using (Aes aes = Aes.Create())
+            {
+                aes.Key = Encoding.UTF8.GetBytes(key);
+                aes.IV = Encoding.UTF8.GetBytes(iv);
+
+                using (MemoryStream memoryStream = new MemoryStream())
+                {
+                    using (CryptoStream cryptoStream = new CryptoStream(memoryStream, aes.CreateEncryptor(), CryptoStreamMode.Write))
+                    {
+                        using (StreamWriter writer = new StreamWriter(cryptoStream))
+                        {
+                            writer.Write(plainText);
+                        }
+                    }
+                    return Convert.ToBase64String(memoryStream.ToArray());
+                }
+            }
+        }
+        public static string Decrypt(string cipherText)
+        {
+            try
+            {
+                using (Aes aes = Aes.Create())
+                {
+                    aes.Key = Encoding.UTF8.GetBytes(key);
+                    aes.IV = Encoding.UTF8.GetBytes(iv);
+
+                    using (MemoryStream memoryStream = new MemoryStream(Convert.FromBase64String(cipherText)))
+                    {
+                        using (CryptoStream cryptoStream = new CryptoStream(memoryStream, aes.CreateDecryptor(), CryptoStreamMode.Read))
+                        {
+                            using (StreamReader reader = new StreamReader(cryptoStream))
+                            {
+                                return reader.ReadToEnd();
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception e) {
+                MessageBox.Show("The configuration file can't be decrypted, the file might be corrupted or it doesn't belong to this device:\r\n" + e.Message, "Encryption Alert", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return "";
+            }
         }
     }
 }
