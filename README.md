@@ -37,8 +37,8 @@ Simplemente pon los datos que acabas de conseguir en las pantallas de configurac
 La interfaz tiene unos cuantos botones, siendo <img src="https://github.com/LuisMiSanVe/GeminiPostSQL/blob/main/AiPostgreWinForms/Resources/key.png" width="20" alt="API Key Settings"> y <img src="https://github.com/LuisMiSanVe/GeminiPostSQL/blob/main/AiPostgreWinForms/Resources/db.png" width="20" alt="Database Settings"> las pantallas de configuración, de la clave de la API y la base de datos respectivamente y <img src="https://github.com/LuisMiSanVe/GeminiPostSQL/blob/main/AiPostgreWinForms/Resources/show.png" width="20" alt="Show SQL">/<img src="https://github.com/LuisMiSanVe/GeminiPostSQL/blob/main/AiPostgreWinForms/Resources/hide.png" width="20" alt="Hide SQL"> para mostrar u ocultar la consulta creada por la IA.
 
 Al hacer clic en 'Save' en la pantalla de Configuración de la  Base de  Datos o en la de Configuración de la clave de la API (si la caja de 'Remember' está marcada) un archivo se creará en la carpeta interna del programa para que la siguiente vez que se inicie, todos esos datos se carguen automaticamente.
-> [!WARNING]
-> Ten en cuenta que estos archivos no están encriptados por el momento, por lo que cualquier persona indeseada podría acceder a ellos.
+> [!NOTE]
+> Se encripta los ficheros de configuración de la API Key y los datos de la BBDD usando AES con un Método Basado en Sistemas Especificos, en la que se crea la clave AES con la información de tu equipo, por lo que si alguna persona indeseada roba esos ficheros, no podrían ser desencriptados, manteniendo tus datos sensibles a salvo.
 
 **Método de traducción de Lenguaje Natural a SQL:**  
 Este método mapea la estructura de la base de datos en un JSON que Gemini analiza para crear una consulta SQL, la cual es ejecutada por el servidor PostgreSQL directamente.  
@@ -61,6 +61,7 @@ El número de la versión seguirá este formato: \
   - [Npgsql](https://www.npgsql.org/) (8.0.5)
   - [RestSharp](https://restsharp.dev/) (112.1.0)
   - [Newtonsoft.Json](https://www.newtonsoft.com/json) (13.0.3)
+  - [System.Management](https://learn.microsoft.com/es-es/dotnet/api/system.management?view=netframework-1.1) (9.0.1)
 - Otros:
   - [PostgreSQL](https://www.postgresql.org/) (16.3)
   - [pgAdmin 4](https://www.pgadmin.org/) (8.9)
