@@ -36,7 +36,7 @@ The interface have a few buttons, being <img src="https://github.com/LuisMiSanVe
 
 When you click 'Save' in the Database Settings Window or in the API Key Settings Window (if the 'Remember' box is checked) a file will be created in the internal folder of the program so the next time the program is started, all this data gets loaded automaticly.
 > [!NOTE]
-> It haves encryption to the API Key and DB data configuration files using AES with a Specific System Based Method, where the AES Key is made with your system's specs, so if any unwanted person steals those files, they couldn't be decrypted, maintaining your sensitive data secure.
+> It encrypts to the API Key and DB data configuration files using AES with a Specific System Based Method, where the AES Key is made with your system's specs, so if any unwanted person steals those files, they couldn't be decrypted, maintaining your sensitive data secure.
 
 **Natural Language to SQL Translation Method:**  
 This method maps the database structure into a JSON that Gemini analyzes to create an SQL query, which is then run by the PostgreSQL Server, returning the requested data.  
