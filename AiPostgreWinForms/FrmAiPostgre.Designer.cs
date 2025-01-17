@@ -36,7 +36,6 @@
             tb_userrequest = new TextBox();
             tb_aiquery = new TextBox();
             dgv_airesult = new DataGridView();
-            lbl_warning = new Label();
             lbl_title = new Label();
             btn_dbsettings = new Button();
             llbl_github = new LinkLabel();
@@ -68,6 +67,7 @@
             pb_loading = new ProgressBar();
             lbl_loadstatus = new Label();
             pcbx_loadinggif = new PictureBox();
+            Btn_Copy = new Button();
             ((System.ComponentModel.ISupportInitialize)dgv_airesult).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pcbx_icon).BeginInit();
             gb_key.SuspendLayout();
@@ -108,7 +108,7 @@
             // 
             // btn_send
             // 
-            btn_send.Location = new Point(703, 560);
+            btn_send.Location = new Point(703, 556);
             btn_send.Margin = new Padding(4, 5, 4, 5);
             btn_send.Name = "btn_send";
             btn_send.Size = new Size(71, 38);
@@ -133,7 +133,7 @@
             tb_aiquery.Location = new Point(17, 512);
             tb_aiquery.Margin = new Padding(4, 5, 4, 5);
             tb_aiquery.Name = "tb_aiquery";
-            tb_aiquery.Size = new Size(313, 31);
+            tb_aiquery.Size = new Size(635, 31);
             tb_aiquery.TabIndex = 6;
             tb_aiquery.Visible = false;
             tb_aiquery.KeyDown += tb_aiquery_KeyDown;
@@ -147,17 +147,6 @@
             dgv_airesult.RowHeadersWidth = 62;
             dgv_airesult.Size = new Size(757, 417);
             dgv_airesult.TabIndex = 7;
-            // 
-            // lbl_warning
-            // 
-            lbl_warning.AutoSize = true;
-            lbl_warning.ForeColor = Color.Red;
-            lbl_warning.Location = new Point(417, 517);
-            lbl_warning.Margin = new Padding(4, 0, 4, 0);
-            lbl_warning.Name = "lbl_warning";
-            lbl_warning.Size = new Size(377, 25);
-            lbl_warning.TabIndex = 8;
-            lbl_warning.Text = "Remember AI can sometimes make up things!";
             // 
             // lbl_title
             // 
@@ -441,7 +430,7 @@
             // 
             // btn_tweak
             // 
-            btn_tweak.Location = new Point(338, 508);
+            btn_tweak.Location = new Point(703, 508);
             btn_tweak.Margin = new Padding(4, 5, 4, 5);
             btn_tweak.Name = "btn_tweak";
             btn_tweak.Size = new Size(71, 38);
@@ -492,18 +481,31 @@
             pcbx_loadinggif.TabIndex = 0;
             pcbx_loadinggif.TabStop = false;
             // 
+            // Btn_Copy
+            // 
+            Btn_Copy.BackgroundImage = (Image)resources.GetObject("Btn_Copy.BackgroundImage");
+            Btn_Copy.BackgroundImageLayout = ImageLayout.Zoom;
+            Btn_Copy.Location = new Point(660, 508);
+            Btn_Copy.Margin = new Padding(4, 5, 4, 5);
+            Btn_Copy.Name = "Btn_Copy";
+            Btn_Copy.Size = new Size(35, 38);
+            Btn_Copy.TabIndex = 19;
+            Btn_Copy.UseVisualStyleBackColor = true;
+            Btn_Copy.Visible = false;
+            Btn_Copy.Click += Btn_Copy_Click;
+            // 
             // FrmAiPostgre
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(869, 653);
+            Controls.Add(Btn_Copy);
             Controls.Add(gb_loading);
             Controls.Add(gb_database);
             Controls.Add(gb_key);
             Controls.Add(pcbx_icon);
             Controls.Add(llbl_github);
             Controls.Add(btn_dbsettings);
-            Controls.Add(lbl_warning);
             Controls.Add(tb_aiquery);
             Controls.Add(tb_userrequest);
             Controls.Add(btn_send);
@@ -541,7 +543,6 @@
         private TextBox tb_userrequest;
         private TextBox tb_aiquery;
         private DataGridView dgv_airesult;
-        private Label lbl_warning;
         private Label lbl_title;
         private Button btn_dbsettings;
         private LinkLabel llbl_github;
@@ -573,5 +574,6 @@
         private Button btn_keyback;
         private Label lbl_loadstatus;
         private ProgressBar pb_loading;
+        private Button Btn_Copy;
     }
 }

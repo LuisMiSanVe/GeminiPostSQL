@@ -21,6 +21,7 @@ namespace AiPostgreWinForms
 
         // Database Data
         public static string database = "";
+        public static string json = "";
 
         // Encryption Data
         public static string key;
@@ -36,8 +37,8 @@ namespace AiPostgreWinForms
             // Creates the Encrytion Keys
             if (GetMotherboardSerialNumber() != "")
             {
-                key = GetMotherboardSerialNumber().Remove(6, GetMotherboardSerialNumber().Length - 6) + "12345678901234567890123456"; // Must be 32 bytes for AES-256
-                iv = GetMotherboardSerialNumber().Remove(6, GetMotherboardSerialNumber().Length - 6) + "1234567890"; // Must be 16 bytes for AES
+                key = GetMotherboardSerialNumber().Remove(6, GetMotherboardSerialNumber().Length - 6) + "SpecificSystemBasedEncrypt"; // Must be 32 bytes for AES-256
+                iv = GetMotherboardSerialNumber().Remove(6, GetMotherboardSerialNumber().Length - 6) + "SpecSysEnc"; // Must be 16 bytes for AES
             }
             else
             {
@@ -94,6 +95,7 @@ namespace AiPostgreWinForms
             {
                 tb_aiquery.Visible = false;
                 btn_tweak.Visible = false;
+                Btn_Copy.Visible = false;
                 btn_showquery.BackgroundImage = il_showimages.Images[0];
                 tt_hover.SetToolTip(btn_showquery, "Show the generated query");
             }
@@ -101,6 +103,7 @@ namespace AiPostgreWinForms
             {
                 tb_aiquery.Visible = true;
                 btn_tweak.Visible = true;
+                Btn_Copy.Visible = true;
                 btn_showquery.BackgroundImage = il_showimages.Images[1];
                 tt_hover.SetToolTip(btn_showquery, "Hide the generated query");
             }
@@ -191,6 +194,9 @@ namespace AiPostgreWinForms
                     dgv_airesult.Enabled = true;
                     llbl_github.Enabled = true;
                     btn_tweak.Enabled = true;
+
+                    // Empties the possible mapped database
+                    json = "";
                 }
                 catch (Exception)
                 {
@@ -238,71 +244,38 @@ namespace AiPostgreWinForms
                         if (connection != null)
                         {
                             connection.Open();
-
-                            // OBTAIN DB
-                            // Get the quantity of tables and columns for the loading bar
-                            var tableQuantity = new NpgsqlCommand("SELECT (" +
-                                                                  "SELECT COUNT(*) FROM information_schema.tables " +
-                                                                  "WHERE table_type = 'BASE TABLE' AND table_name NOT LIKE 'pg_%' AND table_name NOT LIKE 'sql_%') +" +
-                                                                  "(SELECT COUNT(*) FROM information_schema.columns " +
-                                                                  "WHERE table_schema NOT LIKE 'pg_%' AND table_name NOT LIKE 'sql_%')", connection).ExecuteReader();
-                            while (tableQuantity.Read())
+                            // If the database is already mapped, it skips the process
+                            if (json == "")
                             {
-                                pb_loading.Invoke((MethodInvoker)(() =>
+                                // OBTAIN DB
+                                // Get the quantity of tables and columns for the loading bar
+                                var tableQuantity = new NpgsqlCommand("SELECT (" +
+                                                                      "SELECT COUNT(*) FROM information_schema.tables " +
+                                                                      "WHERE table_type = 'BASE TABLE' AND table_name NOT LIKE 'pg_%' AND table_name NOT LIKE 'sql_%') +" +
+                                                                      "(SELECT COUNT(*) FROM information_schema.columns " +
+                                                                      "WHERE table_schema NOT LIKE 'pg_%' AND table_name NOT LIKE 'sql_%')", connection).ExecuteReader();
+                                while (tableQuantity.Read())
                                 {
-                                    pb_loading.Maximum = tableQuantity.GetInt32(0);
-                                    lbl_loadstatus.Text = "Mapping... (0/" + pb_loading.Maximum + ")";
-                                }));
-                            }
-                            tableQuantity.Close();
-                            // Tables
-                            var tablesDB = new NpgsqlCommand("SELECT CONCAT(table_schema, '.', table_name) AS full_table_name " +
-                                                             "FROM information_schema.tables WHERE table_type = 'BASE TABLE' AND table_name NOT LIKE 'pg_%' AND table_name NOT LIKE 'sql_%' " +
-                                                             "ORDER BY full_table_name;", connection).ExecuteReader();
-                            // Table           Column(Type)
-                            Dictionary<string, List<string>> tables = new Dictionary<string, List<string>>();
-
-                            while (tablesDB.Read())
-                            {
-                                if (!tables.ContainsKey(tablesDB.GetString(0)))
-                                {
-                                    //         Name                   Columns
-                                    tables.Add(tablesDB.GetString(0), null);
-                                    // Fills the loading bar
                                     pb_loading.Invoke((MethodInvoker)(() =>
                                     {
-                                        if (pb_loading.Value < pb_loading.Maximum)
-                                        {
-                                            pb_loading.Value++;
-                                            lbl_loadstatus.Text = "Mapping... (" + pb_loading.Value + "/" + pb_loading.Maximum + ")";
-                                        }
+                                        pb_loading.Maximum = tableQuantity.GetInt32(0);
+                                        lbl_loadstatus.Text = "Mapping... (0/" + pb_loading.Maximum + ")";
                                     }));
                                 }
-                            }
-                            tablesDB.Close();
-                            // Columns
-                            foreach (string tableName in tables.Keys)
-                            {
-                                var columnsDB = new NpgsqlCommand("SELECT c.column_name, c.data_type, CASE WHEN tc.constraint_type = 'PRIMARY KEY' THEN 'PK' WHEN tc.constraint_type = 'FOREIGN KEY' THEN 'FK' ELSE '' END AS key_type " +
-                                                                  "FROM information_schema.columns c " +
-                                                                  "LEFT JOIN information_schema.key_column_usage kcu ON c.table_schema = kcu.table_schema AND c.table_name = kcu.table_name AND c.column_name = kcu.column_name " +
-                                                                  "LEFT JOIN information_schema.table_constraints tc ON kcu.constraint_name = tc.constraint_name AND kcu.table_schema = tc.table_schema AND kcu.table_name = tc.table_name " +
-                                                                  "WHERE c.table_schema = '" + tableName.Substring(0, tableName.IndexOf('.')) + "' AND c.table_name = '" + tableName.Remove(0, tableName.IndexOf('.') + 1) + "'" +
-                                                                  "ORDER BY c.column_name;", connection).ExecuteReader();
+                                tableQuantity.Close();
+                                // Tables
+                                var tablesDB = new NpgsqlCommand("SELECT CONCAT(table_schema, '.', table_name) AS full_table_name " +
+                                                                 "FROM information_schema.tables WHERE table_type = 'BASE TABLE' AND table_name NOT LIKE 'pg_%' AND table_name NOT LIKE 'sql_%' " +
+                                                                 "ORDER BY full_table_name;", connection).ExecuteReader();
+                                // Table           Column(Type)
+                                Dictionary<string, List<string>> tables = new Dictionary<string, List<string>>();
 
-                                List<string> columns = new List<string>();
-
-                                while (columnsDB.Read())
+                                while (tablesDB.Read())
                                 {
-                                    string columnInfo = columnsDB.GetString(0) + "(" + columnsDB.GetString(1) + ")";
-                                    if (!columnsDB.GetString(2).Equals(""))
-                                        columnInfo = columnsDB.GetString(0) + "(" + columnsDB.GetString(1) + ") (" + columnsDB.GetString(2) + ")";
-
-                                    if (!columns.Contains(columnInfo))
-                                    {   //      Name(Type)(Key)
-                                        columns.Add(columnInfo);
-
-                                        tables[tableName] = columns;
+                                    if (!tables.ContainsKey(tablesDB.GetString(0)))
+                                    {
+                                        //         Name                   Columns
+                                        tables.Add(tablesDB.GetString(0), null);
                                         // Fills the loading bar
                                         pb_loading.Invoke((MethodInvoker)(() =>
                                         {
@@ -314,23 +287,66 @@ namespace AiPostgreWinForms
                                         }));
                                     }
                                 }
-                                columnsDB.Close();
+                                tablesDB.Close();
+                                // Columns
+                                foreach (string tableName in tables.Keys)
+                                {
+                                    var columnsDB = new NpgsqlCommand("SELECT c.column_name, c.data_type, CASE WHEN tc.constraint_type = 'PRIMARY KEY' THEN 'PK' WHEN tc.constraint_type = 'FOREIGN KEY' THEN 'FK' ELSE '' END AS key_type " +
+                                                                      "FROM information_schema.columns c " +
+                                                                      "LEFT JOIN information_schema.key_column_usage kcu ON c.table_schema = kcu.table_schema AND c.table_name = kcu.table_name AND c.column_name = kcu.column_name " +
+                                                                      "LEFT JOIN information_schema.table_constraints tc ON kcu.constraint_name = tc.constraint_name AND kcu.table_schema = tc.table_schema AND kcu.table_name = tc.table_name " +
+                                                                      "WHERE c.table_schema = '" + tableName.Substring(0, tableName.IndexOf('.')) + "' AND c.table_name = '" + tableName.Remove(0, tableName.IndexOf('.') + 1) + "'" +
+                                                                      "ORDER BY c.column_name;", connection).ExecuteReader();
+
+                                    List<string> columns = new List<string>();
+
+                                    while (columnsDB.Read())
+                                    {
+                                        string columnInfo = columnsDB.GetString(0) + "(" + columnsDB.GetString(1) + ")";
+                                        if (!columnsDB.GetString(2).Equals(""))
+                                            columnInfo = columnsDB.GetString(0) + "(" + columnsDB.GetString(1) + ") (" + columnsDB.GetString(2) + ")";
+
+                                        if (!columns.Contains(columnInfo))
+                                        {   //      Name(Type)(Key)
+                                            columns.Add(columnInfo);
+
+                                            tables[tableName] = columns;
+                                            // Fills the loading bar
+                                            pb_loading.Invoke((MethodInvoker)(() =>
+                                            {
+                                                if (pb_loading.Value < pb_loading.Maximum)
+                                                {
+                                                    pb_loading.Value++;
+                                                    lbl_loadstatus.Text = "Mapping... (" + pb_loading.Value + "/" + pb_loading.Maximum + ")";
+                                                }
+                                            }));
+                                        }
+                                    }
+                                    columnsDB.Close();
+                                }
+                                // Finish the loading bar
+                                pb_loading.Invoke((MethodInvoker)(() =>
+                                {
+                                    int difference = pb_loading.Maximum - pb_loading.Value;
+                                    pb_loading.Value += difference;
+                                    lbl_loadstatus.Text = "Mapping... (" + pb_loading.Maximum + "/" + pb_loading.Maximum + ")";
+                                }));
+
+                                var opcions = new JsonSerializerOptions
+                                {
+                                    WriteIndented = true // JSON format
+                                };
+
+                                json = System.Text.Json.JsonSerializer.Serialize(tables, opcions);
                             }
-                            // Finish the loading bar
-                            pb_loading.Invoke((MethodInvoker)(() =>
+                            else
                             {
-                                int difference = pb_loading.Maximum - pb_loading.Value;
-                                pb_loading.Value += difference;
-                                lbl_loadstatus.Text = "Mapping... (" + pb_loading.Maximum + "/" + pb_loading.Maximum + ")";
-                            }));
-
-                            var opcions = new JsonSerializerOptions
-                            {
-                                WriteIndented = true // JSON format
-                            };
-
-                            string json = System.Text.Json.JsonSerializer.Serialize(tables, opcions);
-
+                                // Finish the loading bar
+                                pb_loading.Invoke((MethodInvoker)(() =>
+                                {
+                                    pb_loading.Value = pb_loading.Maximum;
+                                }));
+                            }
                             // Creates context to modify AI's behavior
                             string context = "You're a database assistant, I'll send you requests and you'll return a PostgeSQL query to do my request and if what I request can't be found on the database, tell me, but don't use more words. " +
                                              "This is the database: " +
@@ -370,7 +386,8 @@ namespace AiPostgreWinForms
                                     btn_keysettings_Click(null, null);
                                 }));
                             }
-                            catch (Exception ex) {
+                            catch (Exception ex)
+                            {
                                 MessageBox.Show("The provided Gemini API Key has failed to access the endpoint, make sure the API Key or Service is functional", "API Key failed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                                 gb_key.Invoke((MethodInvoker)(() =>
                                 {
@@ -598,10 +615,17 @@ namespace AiPostgreWinForms
                     }
                 }
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
                 MessageBox.Show("The configuration file can't be decrypted, the file might be corrupted or it doesn't belong to this device:\r\n" + e.Message, "Encryption Alert", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return "";
             }
+        }
+
+        private void Btn_Copy_Click(object sender, EventArgs e)
+        {
+            if (tb_aiquery.Text!="")
+                Clipboard.SetText(tb_aiquery.Text);
         }
     }
 }
