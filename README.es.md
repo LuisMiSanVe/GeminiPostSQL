@@ -67,4 +67,5 @@ El número de la versión seguirá este formato: \
   - [pgAdmin 4](https://www.pgadmin.org/) (8.9)
   - Gemini API Key (1.5 Flash)
   - [FreeIcons](https://freeicons.io/) (Fuente original de los iconos, luego retocados por mi)
+  - [Microsoft Visual Studio Installer Projects 2022](https://marketplace.visualstudio.com/items?itemName=VisualStudioClient.MicrosoftVisualStudio2022InstallerProjects) (2.0.1)
 - IDE Recomendado: [Visual Studio](https://visualstudio.microsoft.com/) 2022
