@@ -1,0 +1,13 @@
+C:\Users\Lm.Sanchez\source\repos\AiPostgreWinForms\bin\Release\net8.0-windows\publish\GeminiPostSQL.exe
+C:\Users\Lm.Sanchez\source\repos\AiPostgreWinForms\bin\Release\net8.0-windows\publish\GeminiPostSQL.dll
+C:\Users\Lm.Sanchez\source\repos\AiPostgreWinForms\bin\Release\net8.0-windows\publish\GeminiPostSQL.deps.json
+C:\Users\Lm.Sanchez\source\repos\AiPostgreWinForms\bin\Release\net8.0-windows\publish\GeminiPostSQL.runtimeconfig.json
+C:\Users\Lm.Sanchez\source\repos\AiPostgreWinForms\bin\Release\net8.0-windows\publish\GeminiPostSQL.pdb
+C:\Users\Lm.Sanchez\source\repos\AiPostgreWinForms\bin\Release\net8.0-windows\publish\Microsoft.Extensions.DependencyInjection.Abstractions.dll
+C:\Users\Lm.Sanchez\source\repos\AiPostgreWinForms\bin\Release\net8.0-windows\publish\Microsoft.Extensions.Logging.Abstractions.dll
+C:\Users\Lm.Sanchez\source\repos\AiPostgreWinForms\bin\Release\net8.0-windows\publish\Newtonsoft.Json.dll
+C:\Users\Lm.Sanchez\source\repos\AiPostgreWinForms\bin\Release\net8.0-windows\publish\Npgsql.dll
+C:\Users\Lm.Sanchez\source\repos\AiPostgreWinForms\bin\Release\net8.0-windows\publish\RestSharp.dll
+C:\Users\Lm.Sanchez\source\repos\AiPostgreWinForms\bin\Release\net8.0-windows\publish\System.CodeDom.dll
+C:\Users\Lm.Sanchez\source\repos\AiPostgreWinForms\bin\Release\net8.0-windows\publish\System.Management.dll
+C:\Users\Lm.Sanchez\source\repos\AiPostgreWinForms\bin\Release\net8.0-windows\publish\runtimes\win\lib\net8.0\System.Management.dll

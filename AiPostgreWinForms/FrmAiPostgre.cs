@@ -124,6 +124,7 @@ namespace AiPostgreWinForms
             dgv_airesult.Enabled = false;
             llbl_github.Enabled = false;
             btn_tweak.Enabled = false;
+            Btn_Copy.Enabled = false;
         }
 
         private void btn_dbsettings_Click(object sender, EventArgs e)
@@ -141,6 +142,7 @@ namespace AiPostgreWinForms
             dgv_airesult.Enabled = false;
             llbl_github.Enabled = false;
             btn_tweak.Enabled = false;
+            Btn_Copy.Enabled = false;
         }
 
         private void btn_saveapi_Click(object sender, EventArgs e)
@@ -163,6 +165,7 @@ namespace AiPostgreWinForms
                 dgv_airesult.Enabled = true;
                 llbl_github.Enabled = true;
                 btn_tweak.Enabled = true;
+                Btn_Copy.Enabled = true;
             }
             else
                 MessageBox.Show("The API Key provided doesn't match with a Google API Key.", "API Key doesn't match the format", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -194,6 +197,7 @@ namespace AiPostgreWinForms
                     dgv_airesult.Enabled = true;
                     llbl_github.Enabled = true;
                     btn_tweak.Enabled = true;
+                    Btn_Copy.Enabled = true;
 
                     // Empties the possible mapped database
                     json = "";
@@ -508,6 +512,7 @@ namespace AiPostgreWinForms
             dgv_airesult.Enabled = true;
             llbl_github.Enabled = true;
             btn_tweak.Enabled = true;
+            Btn_Copy.Enabled = true;
         }
 
         private void btn_keyback_Click(object sender, EventArgs e)
@@ -523,6 +528,7 @@ namespace AiPostgreWinForms
             dgv_airesult.Enabled = true;
             llbl_github.Enabled = true;
             btn_tweak.Enabled = true;
+            Btn_Copy.Enabled = true;
         }
 
         private void FrmAiPostgre_FormClosing(object sender, FormClosingEventArgs e)
