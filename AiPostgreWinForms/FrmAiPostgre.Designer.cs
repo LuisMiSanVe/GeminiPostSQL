@@ -456,7 +456,7 @@
             // 
             // pb_loading
             // 
-            pb_loading.Location = new Point(0, 669);
+            pb_loading.Location = new Point(0, 625);
             pb_loading.Name = "pb_loading";
             pb_loading.Size = new Size(881, 30);
             pb_loading.TabIndex = 2;
@@ -465,7 +465,7 @@
             // 
             lbl_loadstatus.AutoSize = true;
             lbl_loadstatus.ForeColor = SystemColors.ControlText;
-            lbl_loadstatus.Location = new Point(20, 628);
+            lbl_loadstatus.Location = new Point(20, 580);
             lbl_loadstatus.Name = "lbl_loadstatus";
             lbl_loadstatus.Size = new Size(88, 25);
             lbl_loadstatus.TabIndex = 1;
@@ -475,9 +475,9 @@
             // 
             pcbx_loadinggif.BackgroundImageLayout = ImageLayout.Stretch;
             pcbx_loadinggif.Image = (Image)resources.GetObject("pcbx_loadinggif.Image");
-            pcbx_loadinggif.Location = new Point(173, 82);
+            pcbx_loadinggif.Location = new Point(165, 41);
             pcbx_loadinggif.Name = "pcbx_loadinggif";
-            pcbx_loadinggif.Size = new Size(548, 607);
+            pcbx_loadinggif.Size = new Size(550, 550);
             pcbx_loadinggif.TabIndex = 0;
             pcbx_loadinggif.TabStop = false;
             // 

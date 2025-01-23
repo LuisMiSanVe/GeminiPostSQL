@@ -234,20 +234,24 @@ namespace AiPostgreWinForms
             {   // You can't use it unless you have something written
                 if (tb_userrequest.Text != "" && tb_userrequest.ForeColor != Color.Gray)
                 {
-                    // Enables the loading screen
-                    gb_loading.Size = new Size(891, 709);
-                    gb_loading.Location = new Point(-10, -40);
-                    gb_loading.Visible = true;
-                    lbl_loadstatus.Text = "Mapping...";
-                    pb_loading.Value = 0; // Restart the bar value
                     var thread = new Thread(() =>
                     {
                         // Connects to the database
                         var connection = new NpgsqlConnection(database);
 
-                        if (connection != null)
+                        if (connection != null && connection.ConnectionString != "")
                         {
                             connection.Open();
+
+                            pb_loading.Invoke((MethodInvoker)(() =>
+                            {
+                                // Enables the loading screen
+                                gb_loading.Dock = DockStyle.Fill;
+                                gb_loading.Visible = true;
+                                lbl_loadstatus.Text = "Mapping...";
+                                pb_loading.Value = 0; // Restart the bar value 
+                            }));
+
                             // If the database is already mapped, it skips the process
                             if (json == "")
                             {
@@ -402,8 +406,7 @@ namespace AiPostgreWinForms
                             gb_loading.Invoke((MethodInvoker)(() =>
                             {
                                 gb_loading.Visible = false;
-                                gb_loading.Size = new Size(1, 1);
-                                gb_loading.Location = new Point(0, 0);
+                                gb_loading.Dock = DockStyle.None;
                             }));
                             try
                             {
@@ -432,6 +435,13 @@ namespace AiPostgreWinForms
                                     }));
                             }
                         }
+                        else {
+                            MessageBox.Show("You need to set up a proper Database connection first!", "No Database found", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            btn_dbsettings.Invoke((MethodInvoker)(() =>
+                            {
+                                btn_dbsettings_Click(sender, e);
+                            }));
+                        }
                     });
                     thread.Start();
                 }
@@ -459,7 +469,7 @@ namespace AiPostgreWinForms
             {
                 var connection = new NpgsqlConnection(database);
 
-                if (connection != null)
+                if (connection != null && connection.ConnectionString != "")
                 {
                     connection.Open();
                     try
@@ -477,6 +487,10 @@ namespace AiPostgreWinForms
                     {
                         MessageBox.Show("An error was thrown while running the query (" + tb_aiquery.Text + ")", "The query failed to run in the PostgreSQL Server", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
+                }
+                else {
+                    MessageBox.Show("You need to set up a proper Database connection first!", "No Database found", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    btn_dbsettings_Click(sender, e);
                 }
             }
         }
