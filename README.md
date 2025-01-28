@@ -70,6 +70,8 @@ The version number will follow this format: \
   - [PostgreSQL](https://www.postgresql.org/) (16.3)
   - [pgAdmin 4](https://www.pgadmin.org/) (8.9)
   - Gemini API Key (1.5 Flash)
-  - [FreeIcons](https://freeicons.io/) (Icons source, later retouched by me)
+  - Images (Icons source, later retouched by me):
+    - [FreeIcons](https://freeicons.io/)
+    - [Depositphotos](https://depositphotos.com/vector/coarse-halftone-dots-pattern-gradient-in-vector-format-82396024.html)
   - [Microsoft Visual Studio Installer Projects 2022](https://marketplace.visualstudio.com/items?itemName=VisualStudioClient.MicrosoftVisualStudio2022InstallerProjects) (2.0.1)
 - Recommended IDE: [Visual Studio](https://visualstudio.microsoft.com/) 2022
