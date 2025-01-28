@@ -829,11 +829,11 @@ namespace AiPostgreWinForms
                         {
                             MessageBox.Show("The Mapped Database couldn't be saved in your drive, make sure the installation path have the necessary permissions or start the program as Administrator.","Permissions Error",MessageBoxButtons.OK,MessageBoxIcon.Error);
                         }
-                        gb_map.Invoke((MethodInvoker)(() =>
-                        {
-                            gb_map.Enabled = true;
-                        }));
                     }
+                    gb_map.Invoke((MethodInvoker)(() =>
+                    {
+                        gb_map.Enabled = true;
+                    }));
                 });
                 thread.Start();
             }
