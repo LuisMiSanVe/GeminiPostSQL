@@ -71,6 +71,16 @@ namespace AiPostgreWinForms
                 }
                 database = dbsettings;
             }
+
+            // Load the Mapped Databases
+            if (Directory.Exists("MappedDB"))
+            {
+                for (int i = 0; i < Directory.EnumerateFiles("MappedDB").Count(); i++)
+                {
+                    lv_maps.Items.Add(Directory.GetFiles("MappedDB")[i].Remove(0, 9).Replace(".json", ""));
+                }
+            }
+
             // Load text hints
             tb_userrequest.ForeColor = Color.Gray;
             tb_userrequest.Text = "Request...";
@@ -113,7 +123,6 @@ namespace AiPostgreWinForms
         {
             // Displays the selected settings
             gb_key.Visible = true;
-            gb_database.Visible = false;
 
             // Disables the functionality of the rest of the program
             btn_dbsettings.Enabled = false;
@@ -125,12 +134,12 @@ namespace AiPostgreWinForms
             llbl_github.Enabled = false;
             btn_tweak.Enabled = false;
             Btn_Copy.Enabled = false;
+            btn_mapdb.Enabled = false;
         }
 
         private void btn_dbsettings_Click(object sender, EventArgs e)
         {
             // Displays the selected settings
-            gb_key.Visible = false;
             gb_database.Visible = true;
 
             // Disables the functionality of the rest of the program
@@ -143,6 +152,7 @@ namespace AiPostgreWinForms
             llbl_github.Enabled = false;
             btn_tweak.Enabled = false;
             Btn_Copy.Enabled = false;
+            btn_mapdb.Enabled = false;
         }
 
         private void btn_saveapi_Click(object sender, EventArgs e)
@@ -166,6 +176,7 @@ namespace AiPostgreWinForms
                 llbl_github.Enabled = true;
                 btn_tweak.Enabled = true;
                 Btn_Copy.Enabled = true;
+                btn_mapdb.Enabled = true;
             }
             else
                 MessageBox.Show("The API Key provided doesn't match with a Google API Key.", "API Key doesn't match the format", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -198,6 +209,7 @@ namespace AiPostgreWinForms
                     llbl_github.Enabled = true;
                     btn_tweak.Enabled = true;
                     Btn_Copy.Enabled = true;
+                    btn_mapdb.Enabled = true;
 
                     // Empties the possible mapped database
                     json = "";
@@ -234,91 +246,58 @@ namespace AiPostgreWinForms
             {   // You can't use it unless you have something written
                 if (tb_userrequest.Text != "" && tb_userrequest.ForeColor != Color.Gray)
                 {
-                    var thread = new Thread(() =>
+                    if (apikey != "")
                     {
-                        // Connects to the database
-                        var connection = new NpgsqlConnection(database);
-
-                        if (connection != null && connection.ConnectionString != "")
+                        var thread = new Thread(() =>
                         {
-                            connection.Open();
+                            // Connects to the database
+                            var connection = new NpgsqlConnection(database);
 
-                            pb_loading.Invoke((MethodInvoker)(() =>
+                            if (connection != null && connection.ConnectionString != "")
                             {
-                                // Enables the loading screen
-                                gb_loading.Dock = DockStyle.Fill;
-                                gb_loading.Visible = true;
-                                lbl_loadstatus.Text = "Mapping...";
-                                pb_loading.Value = 0; // Restart the bar value 
-                            }));
+                                connection.Open();
 
-                            // If the database is already mapped, it skips the process
-                            if (json == "")
-                            {
-                                // OBTAIN DB
-                                // Get the quantity of tables and columns for the loading bar
-                                var tableQuantity = new NpgsqlCommand("SELECT (" +
-                                                                      "SELECT COUNT(*) FROM information_schema.tables " +
-                                                                      "WHERE table_type = 'BASE TABLE' AND table_name NOT LIKE 'pg_%' AND table_name NOT LIKE 'sql_%') +" +
-                                                                      "(SELECT COUNT(*) FROM information_schema.columns " +
-                                                                      "WHERE table_schema NOT LIKE 'pg_%' AND table_name NOT LIKE 'sql_%')", connection).ExecuteReader();
-                                while (tableQuantity.Read())
+                                pb_loading.Invoke((MethodInvoker)(() =>
                                 {
-                                    pb_loading.Invoke((MethodInvoker)(() =>
-                                    {
-                                        pb_loading.Maximum = tableQuantity.GetInt32(0);
-                                        lbl_loadstatus.Text = "Mapping... (0/" + pb_loading.Maximum + ")";
-                                    }));
-                                }
-                                tableQuantity.Close();
-                                // Tables
-                                var tablesDB = new NpgsqlCommand("SELECT CONCAT(table_schema, '.', table_name) AS full_table_name " +
-                                                                 "FROM information_schema.tables WHERE table_type = 'BASE TABLE' AND table_name NOT LIKE 'pg_%' AND table_name NOT LIKE 'sql_%' " +
-                                                                 "ORDER BY full_table_name;", connection).ExecuteReader();
-                                // Table           Column(Type)
-                                Dictionary<string, List<string>> tables = new Dictionary<string, List<string>>();
+                                    // Enables the loading screen
+                                    gb_loading.Dock = DockStyle.Fill;
+                                    gb_loading.Visible = true;
+                                    lbl_loadstatus.Text = "Mapping...";
+                                    pb_loading.Value = 0; // Restart the bar value 
+                                }));
 
-                                while (tablesDB.Read())
+                                // If the database is already mapped, it skips the process
+                                if (json == "")
                                 {
-                                    if (!tables.ContainsKey(tablesDB.GetString(0)))
+                                    // OBTAIN DB
+                                    // Get the quantity of tables and columns for the loading bar
+                                    var tableQuantity = new NpgsqlCommand("SELECT (" +
+                                                                          "SELECT COUNT(*) FROM information_schema.tables " +
+                                                                          "WHERE table_type = 'BASE TABLE' AND table_name NOT LIKE 'pg_%' AND table_name NOT LIKE 'sql_%') +" +
+                                                                          "(SELECT COUNT(*) FROM information_schema.columns " +
+                                                                          "WHERE table_schema NOT LIKE 'pg_%' AND table_name NOT LIKE 'sql_%')", connection).ExecuteReader();
+                                    while (tableQuantity.Read())
                                     {
-                                        //         Name                   Columns
-                                        tables.Add(tablesDB.GetString(0), null);
-                                        // Fills the loading bar
                                         pb_loading.Invoke((MethodInvoker)(() =>
                                         {
-                                            if (pb_loading.Value < pb_loading.Maximum)
-                                            {
-                                                pb_loading.Value++;
-                                                lbl_loadstatus.Text = "Mapping... (" + pb_loading.Value + "/" + pb_loading.Maximum + ")";
-                                            }
+                                            pb_loading.Maximum = tableQuantity.GetInt32(0);
+                                            lbl_loadstatus.Text = "Mapping... (0/" + pb_loading.Maximum + ")";
                                         }));
                                     }
-                                }
-                                tablesDB.Close();
-                                // Columns
-                                foreach (string tableName in tables.Keys)
-                                {
-                                    var columnsDB = new NpgsqlCommand("SELECT c.column_name, c.data_type, CASE WHEN tc.constraint_type = 'PRIMARY KEY' THEN 'PK' WHEN tc.constraint_type = 'FOREIGN KEY' THEN 'FK' ELSE '' END AS key_type " +
-                                                                      "FROM information_schema.columns c " +
-                                                                      "LEFT JOIN information_schema.key_column_usage kcu ON c.table_schema = kcu.table_schema AND c.table_name = kcu.table_name AND c.column_name = kcu.column_name " +
-                                                                      "LEFT JOIN information_schema.table_constraints tc ON kcu.constraint_name = tc.constraint_name AND kcu.table_schema = tc.table_schema AND kcu.table_name = tc.table_name " +
-                                                                      "WHERE c.table_schema = '" + tableName.Substring(0, tableName.IndexOf('.')) + "' AND c.table_name = '" + tableName.Remove(0, tableName.IndexOf('.') + 1) + "'" +
-                                                                      "ORDER BY c.column_name;", connection).ExecuteReader();
+                                    tableQuantity.Close();
+                                    // Tables
+                                    var tablesDB = new NpgsqlCommand("SELECT CONCAT(table_schema, '.', table_name) AS full_table_name " +
+                                                                     "FROM information_schema.tables WHERE table_type = 'BASE TABLE' AND table_name NOT LIKE 'pg_%' AND table_name NOT LIKE 'sql_%' " +
+                                                                     "ORDER BY full_table_name;", connection).ExecuteReader();
+                                    // Table           Column(Type)
+                                    Dictionary<string, List<string>> tables = new Dictionary<string, List<string>>();
 
-                                    List<string> columns = new List<string>();
-
-                                    while (columnsDB.Read())
+                                    while (tablesDB.Read())
                                     {
-                                        string columnInfo = columnsDB.GetString(0) + "(" + columnsDB.GetString(1) + ")";
-                                        if (!columnsDB.GetString(2).Equals(""))
-                                            columnInfo = columnsDB.GetString(0) + "(" + columnsDB.GetString(1) + ") (" + columnsDB.GetString(2) + ")";
-
-                                        if (!columns.Contains(columnInfo))
-                                        {   //      Name(Type)(Key)
-                                            columns.Add(columnInfo);
-
-                                            tables[tableName] = columns;
+                                        if (!tables.ContainsKey(tablesDB.GetString(0)))
+                                        {
+                                            //         Name                   Columns
+                                            tables.Add(tablesDB.GetString(0), null);
                                             // Fills the loading bar
                                             pb_loading.Invoke((MethodInvoker)(() =>
                                             {
@@ -330,120 +309,162 @@ namespace AiPostgreWinForms
                                             }));
                                         }
                                     }
-                                    columnsDB.Close();
+                                    tablesDB.Close();
+                                    // Columns
+                                    foreach (string tableName in tables.Keys)
+                                    {
+                                        var columnsDB = new NpgsqlCommand("SELECT c.column_name, c.data_type, CASE WHEN tc.constraint_type = 'PRIMARY KEY' THEN 'PK' WHEN tc.constraint_type = 'FOREIGN KEY' THEN 'FK' ELSE '' END AS key_type " +
+                                                                          "FROM information_schema.columns c " +
+                                                                          "LEFT JOIN information_schema.key_column_usage kcu ON c.table_schema = kcu.table_schema AND c.table_name = kcu.table_name AND c.column_name = kcu.column_name " +
+                                                                          "LEFT JOIN information_schema.table_constraints tc ON kcu.constraint_name = tc.constraint_name AND kcu.table_schema = tc.table_schema AND kcu.table_name = tc.table_name " +
+                                                                          "WHERE c.table_schema = '" + tableName.Substring(0, tableName.IndexOf('.')) + "' AND c.table_name = '" + tableName.Remove(0, tableName.IndexOf('.') + 1) + "'" +
+                                                                          "ORDER BY c.column_name;", connection).ExecuteReader();
+
+                                        List<string> columns = new List<string>();
+
+                                        while (columnsDB.Read())
+                                        {
+                                            string columnInfo = columnsDB.GetString(0) + "(" + columnsDB.GetString(1) + ")";
+                                            if (!columnsDB.GetString(2).Equals(""))
+                                                columnInfo = columnsDB.GetString(0) + "(" + columnsDB.GetString(1) + ") (" + columnsDB.GetString(2) + ")";
+
+                                            if (!columns.Contains(columnInfo))
+                                            {   //      Name(Type)(Key)
+                                                columns.Add(columnInfo);
+
+                                                tables[tableName] = columns;
+                                                // Fills the loading bar
+                                                pb_loading.Invoke((MethodInvoker)(() =>
+                                                {
+                                                    if (pb_loading.Value < pb_loading.Maximum)
+                                                    {
+                                                        pb_loading.Value++;
+                                                        lbl_loadstatus.Text = "Mapping... (" + pb_loading.Value + "/" + pb_loading.Maximum + ")";
+                                                    }
+                                                }));
+                                            }
+                                        }
+                                        columnsDB.Close();
+                                    }
+                                    // Finish the loading bar
+                                    pb_loading.Invoke((MethodInvoker)(() =>
+                                    {
+                                        int difference = pb_loading.Maximum - pb_loading.Value;
+                                        pb_loading.Value += difference;
+                                        lbl_loadstatus.Text = "Mapping... (" + pb_loading.Maximum + "/" + pb_loading.Maximum + ")";
+                                    }));
+
+                                    var opcions = new JsonSerializerOptions
+                                    {
+                                        WriteIndented = true // JSON format
+                                    };
+
+                                    json = System.Text.Json.JsonSerializer.Serialize(tables, opcions);
                                 }
-                                // Finish the loading bar
-                                pb_loading.Invoke((MethodInvoker)(() =>
+                                else
                                 {
-                                    int difference = pb_loading.Maximum - pb_loading.Value;
-                                    pb_loading.Value += difference;
-                                    lbl_loadstatus.Text = "Mapping... (" + pb_loading.Maximum + "/" + pb_loading.Maximum + ")";
+                                    // Finish the loading bar
+                                    pb_loading.Invoke((MethodInvoker)(() =>
+                                    {
+                                        pb_loading.Value = pb_loading.Maximum;
+                                    }));
+                                }
+                                // Creates context to modify AI's behavior
+                                string context = "You're a database assistant, I'll send you requests and you'll return a PostgeSQL query to do my request and if what I request can't be found on the database, tell me, but don't use more words. " +
+                                                 "This is the database: " +
+                                                 json +
+                                                 "\nAnd this is my request: ";
+
+                                // I create the request
+                                var Client = new RestClient(endpoint);
+                                var request = new RestRequest(uri + apikey, Method.Post);
+                                request.AddHeader("Content-Type", "application/json");
+
+                                var body = new AIRequest();
+                                body.contents = new Content[] { new Content() { parts = new Part[] { new Part() { text = context + tb_userrequest.Text } } } };
+
+                                var jsonstring = JsonConvert.SerializeObject(body);
+
+                                request.AddJsonBody(jsonstring);
+                                // Sends the request to the service
+                                string generatedSql = "";
+                                lbl_loadstatus.Invoke((MethodInvoker)(() =>
+                                {
+                                    lbl_loadstatus.Text = "Generating...";
                                 }));
-
-                                var opcions = new JsonSerializerOptions
+                                try
                                 {
-                                    WriteIndented = true // JSON format
-                                };
+                                    var response = Client.Post(request);
+                                    var resp = JsonDocument.Parse(response.Content);
+                                    // It extracts the AI's response from the 'Text' field                                                                                      and I remove the SQL Code style the AI adds
+                                    generatedSql = resp.RootElement.GetProperty("candidates")[0].GetProperty("content").GetProperty("parts")[0].GetProperty("text").GetString().Replace("```sql", "").Replace("```", "").Replace('\n', ' ').Trim();
+                                    tb_aiquery.Text = generatedSql;
+                                }
+                                catch (HttpRequestException ex)
+                                {
+                                    MessageBox.Show("The provided Gemini API Key has failed to access the endpoint, make sure the API Key or Service is functional", "API Key failed (" + ex.StatusCode + ")", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                    gb_key.Invoke((MethodInvoker)(() =>
+                                    {
+                                        btn_keysettings_Click(null, null);
+                                    }));
+                                }
+                                catch (Exception ex)
+                                {
+                                    MessageBox.Show("The provided Gemini API Key has failed to access the endpoint, make sure the API Key or Service is functional", "API Key failed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                    gb_key.Invoke((MethodInvoker)(() =>
+                                    {
+                                        btn_keysettings_Click(null, null);
+                                    }));
+                                }
+                                // Disables the loading screen
+                                gb_loading.Invoke((MethodInvoker)(() =>
+                                {
+                                    gb_loading.Visible = false;
+                                    gb_loading.Dock = DockStyle.None;
+                                }));
+                                try
+                                {
+                                    if (generatedSql != "")
+                                    {
+                                        var resultBBDD = new NpgsqlCommand(generatedSql, connection).ExecuteReader();
+                                        DataTable dt = new DataTable();
+                                        dt.Load(resultBBDD);
 
-                                json = System.Text.Json.JsonSerializer.Serialize(tables, opcions);
+                                        // Loads the result in the UI Thread
+                                        dgv_airesult.Invoke((MethodInvoker)(() =>
+                                        {
+                                            dgv_airesult.DataSource = dt;
+                                        }));
+                                    }
+
+                                    connection.Close();
+                                }
+                                catch (Exception)
+                                {
+                                    MessageBox.Show("An error was thrown while running the generated query (" + generatedSql + ")", "The query failed to run in the PostgreSQL Server", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    if (!btn_tweak.Visible)
+                                        btn_showquery.Invoke((MethodInvoker)(() =>
+                                        {
+                                            btn_showquery_Click(sender, e);
+                                        }));
+                                }
                             }
                             else
                             {
-                                // Finish the loading bar
-                                pb_loading.Invoke((MethodInvoker)(() =>
+                                MessageBox.Show("You need to set up a proper Database connection first!", "No Database found", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                btn_dbsettings.Invoke((MethodInvoker)(() =>
                                 {
-                                    pb_loading.Value = pb_loading.Maximum;
+                                    btn_dbsettings_Click(sender, e);
                                 }));
                             }
-                            // Creates context to modify AI's behavior
-                            string context = "You're a database assistant, I'll send you requests and you'll return a PostgeSQL query to do my request and if what I request can't be found on the database, tell me, but don't use more words. " +
-                                             "This is the database: " +
-                                             json +
-                                             "\nAnd this is my request: ";
-
-                            // I create the request
-                            var Client = new RestClient(endpoint);
-                            var request = new RestRequest(uri + apikey, Method.Post);
-                            request.AddHeader("Content-Type", "application/json");
-
-                            var body = new AIRequest();
-                            body.contents = new Content[] { new Content() { parts = new Part[] { new Part() { text = context + tb_userrequest.Text } } } };
-
-                            var jsonstring = JsonConvert.SerializeObject(body);
-
-                            request.AddJsonBody(jsonstring);
-                            // Sends the request to the service
-                            string generatedSql = "";
-                            lbl_loadstatus.Invoke((MethodInvoker)(() =>
-                            {
-                                lbl_loadstatus.Text = "Generating...";
-                            }));
-                            try
-                            {
-                                var response = Client.Post(request);
-                                var resp = JsonDocument.Parse(response.Content);
-                                // It extracts the AI's response from the 'Text' field                                                                                      and I remove the SQL Code style the AI adds
-                                generatedSql = resp.RootElement.GetProperty("candidates")[0].GetProperty("content").GetProperty("parts")[0].GetProperty("text").GetString().Replace("```sql", "").Replace("```", "").Replace('\n', ' ').Trim();
-                                tb_aiquery.Text = generatedSql;
-                            }
-                            catch (HttpRequestException ex)
-                            {
-                                MessageBox.Show("The provided Gemini API Key has failed to access the endpoint, make sure the API Key or Service is functional", "API Key failed (" + ex.StatusCode + ")", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                gb_key.Invoke((MethodInvoker)(() =>
-                                {
-                                    btn_keysettings_Click(null, null);
-                                }));
-                            }
-                            catch (Exception ex)
-                            {
-                                MessageBox.Show("The provided Gemini API Key has failed to access the endpoint, make sure the API Key or Service is functional", "API Key failed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                gb_key.Invoke((MethodInvoker)(() =>
-                                {
-                                    btn_keysettings_Click(null, null);
-                                }));
-                            }
-                            // Disables the loading screen
-                            gb_loading.Invoke((MethodInvoker)(() =>
-                            {
-                                gb_loading.Visible = false;
-                                gb_loading.Dock = DockStyle.None;
-                            }));
-                            try
-                            {
-                                if (generatedSql != "")
-                                {
-                                    var resultBBDD = new NpgsqlCommand(generatedSql, connection).ExecuteReader();
-                                    DataTable dt = new DataTable();
-                                    dt.Load(resultBBDD);
-
-                                    // Loads the result in the UI Thread
-                                    dgv_airesult.Invoke((MethodInvoker)(() =>
-                                    {
-                                        dgv_airesult.DataSource = dt;
-                                    }));
-                                }
-
-                                connection.Close();
-                            }
-                            catch (Exception)
-                            {
-                                MessageBox.Show("An error was thrown while running the generated query (" + generatedSql + ")", "The query failed to run in the PostgreSQL Server", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                                if (!btn_tweak.Visible)
-                                    btn_showquery.Invoke((MethodInvoker)(() =>
-                                    {
-                                        btn_showquery_Click(sender, e);
-                                    }));
-                            }
-                        }
-                        else {
-                            MessageBox.Show("You need to set up a proper Database connection first!", "No Database found", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            btn_dbsettings.Invoke((MethodInvoker)(() =>
-                            {
-                                btn_dbsettings_Click(sender, e);
-                            }));
-                        }
-                    });
-                    thread.Start();
+                        });
+                        thread.Start();
+                    }
+                    else
+                    {
+                        MessageBox.Show("You need to set up a proper API Key first!", "No API Key found", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        btn_keysettings_Click(sender, e);
+                    }
                 }
             }
             catch (Exception ex)
@@ -488,7 +509,8 @@ namespace AiPostgreWinForms
                         MessageBox.Show("An error was thrown while running the query (" + tb_aiquery.Text + ")", "The query failed to run in the PostgreSQL Server", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
-                else {
+                else
+                {
                     MessageBox.Show("You need to set up a proper Database connection first!", "No Database found", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     btn_dbsettings_Click(sender, e);
                 }
@@ -527,6 +549,7 @@ namespace AiPostgreWinForms
             llbl_github.Enabled = true;
             btn_tweak.Enabled = true;
             Btn_Copy.Enabled = true;
+            btn_mapdb.Enabled = true;
         }
 
         private void btn_keyback_Click(object sender, EventArgs e)
@@ -543,6 +566,7 @@ namespace AiPostgreWinForms
             llbl_github.Enabled = true;
             btn_tweak.Enabled = true;
             Btn_Copy.Enabled = true;
+            btn_mapdb.Enabled = true;
         }
 
         private void FrmAiPostgre_FormClosing(object sender, FormClosingEventArgs e)
@@ -644,8 +668,205 @@ namespace AiPostgreWinForms
 
         private void Btn_Copy_Click(object sender, EventArgs e)
         {
-            if (tb_aiquery.Text!="")
+            if (tb_aiquery.Text != "")
                 Clipboard.SetText(tb_aiquery.Text);
+        }
+
+        private void btn_mapdb_Click(object sender, EventArgs e)
+        {
+            // Displays the selected settings
+            gb_map.Visible = true;
+
+            // Disables the functionality of the rest of the program
+            btn_dbsettings.Enabled = false;
+            btn_keysettings.Enabled = false;
+            btn_showquery.Enabled = false;
+            btn_send.Enabled = false;
+            tb_aiquery.Enabled = false;
+            tb_userrequest.Enabled = false;
+            dgv_airesult.Enabled = false;
+            llbl_github.Enabled = false;
+            btn_tweak.Enabled = false;
+            Btn_Copy.Enabled = false;
+        }
+
+        private void btn_backmap_Click(object sender, EventArgs e)
+        {
+            gb_map.Visible = false;
+
+            // Enables the functionality of the rest of the program
+            btn_dbsettings.Enabled = true;
+            btn_keysettings.Enabled = true;
+            btn_showquery.Enabled = true;
+            btn_send.Enabled = true;
+            tb_aiquery.Enabled = true;
+            tb_userrequest.Enabled = true;
+            dgv_airesult.Enabled = true;
+            llbl_github.Enabled = true;
+            btn_tweak.Enabled = true;
+            Btn_Copy.Enabled = true;
+        }
+
+        private void btn_map_Click(object sender, EventArgs e)
+        {
+            if (!lv_maps.Items.Cast<ListViewItem>().Any(item => item.Text == txt_db.Text))
+            {
+                gb_map.Enabled = false;
+
+                int maximum = 0;
+                int current = 0;
+
+                var thread = new Thread(() =>
+                {
+                    // Connects to the database
+                    var connection = new NpgsqlConnection(database);
+
+                    if (connection != null && connection.ConnectionString != "")
+                    {
+                        connection.Open();
+
+                        // OBTAIN DB
+                        // Get the quantity of tables and columns for the loading bar
+                        var tableQuantity = new NpgsqlCommand("SELECT (" +
+                                                              "SELECT COUNT(*) FROM information_schema.tables " +
+                                                              "WHERE table_type = 'BASE TABLE' AND table_name NOT LIKE 'pg_%' AND table_name NOT LIKE 'sql_%') +" +
+                                                              "(SELECT COUNT(*) FROM information_schema.columns " +
+                                                              "WHERE table_schema NOT LIKE 'pg_%' AND table_name NOT LIKE 'sql_%')", connection).ExecuteReader();
+                        while (tableQuantity.Read())
+                        {
+                            lbl_mapprogress.Invoke((MethodInvoker)(() =>
+                            {
+                                maximum = tableQuantity.GetInt32(0);
+                                lbl_mapprogress.Text = "(" + current + "/" + maximum + ")";
+                            }));
+                        }
+                        tableQuantity.Close();
+                        // Tables
+                        var tablesDB = new NpgsqlCommand("SELECT CONCAT(table_schema, '.', table_name) AS full_table_name " +
+                                                         "FROM information_schema.tables WHERE table_type = 'BASE TABLE' AND table_name NOT LIKE 'pg_%' AND table_name NOT LIKE 'sql_%' " +
+                                                         "ORDER BY full_table_name;", connection).ExecuteReader();
+                        // Table           Column(Type)
+                        Dictionary<string, List<string>> tables = new Dictionary<string, List<string>>();
+
+                        while (tablesDB.Read())
+                        {
+                            if (!tables.ContainsKey(tablesDB.GetString(0)))
+                            {
+                                //         Name                   Columns
+                                tables.Add(tablesDB.GetString(0), null);
+                                // Fills the loading bar
+                                lbl_mapprogress.Invoke((MethodInvoker)(() =>
+                                {
+                                    if (current < maximum)
+                                    {
+                                        current++;
+                                        lbl_mapprogress.Text = "(" + current + "/" + maximum + ")";
+                                    }
+                                }));
+                            }
+                        }
+                        tablesDB.Close();
+                        // Columns
+                        foreach (string tableName in tables.Keys)
+                        {
+                            var columnsDB = new NpgsqlCommand("SELECT c.column_name, c.data_type, CASE WHEN tc.constraint_type = 'PRIMARY KEY' THEN 'PK' WHEN tc.constraint_type = 'FOREIGN KEY' THEN 'FK' ELSE '' END AS key_type " +
+                                                              "FROM information_schema.columns c " +
+                                                              "LEFT JOIN information_schema.key_column_usage kcu ON c.table_schema = kcu.table_schema AND c.table_name = kcu.table_name AND c.column_name = kcu.column_name " +
+                                                              "LEFT JOIN information_schema.table_constraints tc ON kcu.constraint_name = tc.constraint_name AND kcu.table_schema = tc.table_schema AND kcu.table_name = tc.table_name " +
+                                                              "WHERE c.table_schema = '" + tableName.Substring(0, tableName.IndexOf('.')) + "' AND c.table_name = '" + tableName.Remove(0, tableName.IndexOf('.') + 1) + "'" +
+                                                              "ORDER BY c.column_name;", connection).ExecuteReader();
+
+                            List<string> columns = new List<string>();
+
+                            while (columnsDB.Read())
+                            {
+                                string columnInfo = columnsDB.GetString(0) + "(" + columnsDB.GetString(1) + ")";
+                                if (!columnsDB.GetString(2).Equals(""))
+                                    columnInfo = columnsDB.GetString(0) + "(" + columnsDB.GetString(1) + ") (" + columnsDB.GetString(2) + ")";
+
+                                if (!columns.Contains(columnInfo))
+                                {   //      Name(Type)(Key)
+                                    columns.Add(columnInfo);
+
+                                    tables[tableName] = columns;
+                                    // Fills the loading bar
+                                    lbl_mapprogress.Invoke((MethodInvoker)(() =>
+                                    {
+                                        if (current < maximum)
+                                        {
+                                            current++;
+                                            lbl_mapprogress.Text = "(" + current + "/" + maximum + ")";
+                                        }
+                                    }));
+                                }
+                            }
+                            columnsDB.Close();
+                        }
+
+                        // Fills the loading bar
+                        lbl_mapprogress.Invoke((MethodInvoker)(() =>
+                        {
+                            lbl_mapprogress.Text = "";
+                        }));
+
+                        var opcions = new JsonSerializerOptions
+                        {
+                            WriteIndented = true // JSON format
+                        };
+
+                        if (!Directory.Exists("MappedDB"))
+                            Directory.CreateDirectory("MappedDB");
+                        File.WriteAllText("MappedDB\\" + txt_db.Text + ".json", System.Text.Json.JsonSerializer.Serialize(tables, opcions));
+
+                        gb_map.Invoke((MethodInvoker)(() =>
+                        {
+                            gb_map.Enabled = true;
+                        }));
+
+                        lv_maps.Invoke((MethodInvoker)(() =>
+                        {
+                            lv_maps.Items.Add(txt_db.Text);
+                        }));
+                    }
+                });
+                thread.Start();
+            }
+            else
+            {
+                MessageBox.Show("That Database is already mapped.", "That map already exists", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        private void btn_selectmap_Click(object sender, EventArgs e)
+        {
+            if (lv_maps.FocusedItem != null)
+            {
+                json = File.ReadAllText("MappedDB\\" + lv_maps.FocusedItem.Text + ".json");
+                // I change the colors to identify the selected map
+                foreach (ListViewItem item in lv_maps.Items)
+                {
+                    item.BackColor = Color.White;
+                    item.ForeColor = Color.Black;
+                }
+                lv_maps.FocusedItem.BackColor = Color.FromArgb(255, 142, 188, 237); //8EBCED
+                lv_maps.FocusedItem.ForeColor = Color.FromArgb(255, 182, 13, 216); //B60DD8
+
+                lv_maps.FocusedItem.Selected = false;
+            }
+        }
+
+        private void btn_deletemap_Click(object sender, EventArgs e)
+        {
+            if (lv_maps.FocusedItem != null)
+            {
+                var result = MessageBox.Show("Are you sure you want to delete this Mapped Database?", "Delete Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                if (result == DialogResult.Yes)
+                {
+                    File.Delete("MappedDB\\" + lv_maps.FocusedItem.Text + ".json");
+                    json = "";
+                    lv_maps.FocusedItem.Remove();
+                }
+            }
         }
     }
 }

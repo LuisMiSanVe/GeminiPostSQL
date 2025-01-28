@@ -62,18 +62,27 @@
             tx_ip = new TextBox();
             lbl_ip = new Label();
             tt_hover = new ToolTip(components);
+            Btn_Copy = new Button();
+            btn_mapdb = new Button();
             btn_tweak = new Button();
             gb_loading = new GroupBox();
             pb_loading = new ProgressBar();
             lbl_loadstatus = new Label();
             pcbx_loadinggif = new PictureBox();
-            Btn_Copy = new Button();
+            gb_map = new GroupBox();
+            lbl_mapprogress = new Label();
+            btn_deletemap = new Button();
+            btn_selectmap = new Button();
+            btn_map = new Button();
+            lv_maps = new ListView();
+            btn_backmap = new Button();
             ((System.ComponentModel.ISupportInitialize)dgv_airesult).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pcbx_icon).BeginInit();
             gb_key.SuspendLayout();
             gb_database.SuspendLayout();
             gb_loading.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pcbx_loadinggif).BeginInit();
+            gb_map.SuspendLayout();
             SuspendLayout();
             // 
             // btn_keysettings
@@ -82,7 +91,7 @@
             btn_keysettings.BackgroundImageLayout = ImageLayout.Zoom;
             btn_keysettings.FlatAppearance.BorderSize = 0;
             btn_keysettings.FlatStyle = FlatStyle.Flat;
-            btn_keysettings.Location = new Point(783, 162);
+            btn_keysettings.Location = new Point(782, 112);
             btn_keysettings.Margin = new Padding(4, 5, 4, 5);
             btn_keysettings.Name = "btn_keysettings";
             btn_keysettings.Size = new Size(71, 83);
@@ -97,7 +106,7 @@
             btn_showquery.BackgroundImageLayout = ImageLayout.Zoom;
             btn_showquery.FlatAppearance.BorderSize = 0;
             btn_showquery.FlatStyle = FlatStyle.Flat;
-            btn_showquery.Location = new Point(783, 255);
+            btn_showquery.Location = new Point(782, 205);
             btn_showquery.Margin = new Padding(4, 5, 4, 5);
             btn_showquery.Name = "btn_showquery";
             btn_showquery.Size = new Size(71, 83);
@@ -165,7 +174,7 @@
             btn_dbsettings.BackgroundImageLayout = ImageLayout.Zoom;
             btn_dbsettings.FlatAppearance.BorderSize = 0;
             btn_dbsettings.FlatStyle = FlatStyle.Flat;
-            btn_dbsettings.Location = new Point(783, 348);
+            btn_dbsettings.Location = new Point(782, 298);
             btn_dbsettings.Margin = new Padding(4, 5, 4, 5);
             btn_dbsettings.Name = "btn_dbsettings";
             btn_dbsettings.Size = new Size(71, 83);
@@ -428,6 +437,35 @@
             lbl_ip.TabIndex = 0;
             lbl_ip.Text = "IP and Port:";
             // 
+            // Btn_Copy
+            // 
+            Btn_Copy.BackgroundImage = (Image)resources.GetObject("Btn_Copy.BackgroundImage");
+            Btn_Copy.BackgroundImageLayout = ImageLayout.Zoom;
+            Btn_Copy.Location = new Point(660, 508);
+            Btn_Copy.Margin = new Padding(4, 5, 4, 5);
+            Btn_Copy.Name = "Btn_Copy";
+            Btn_Copy.Size = new Size(35, 38);
+            Btn_Copy.TabIndex = 19;
+            tt_hover.SetToolTip(Btn_Copy, "Copy the generated query");
+            Btn_Copy.UseVisualStyleBackColor = true;
+            Btn_Copy.Visible = false;
+            Btn_Copy.Click += Btn_Copy_Click;
+            // 
+            // btn_mapdb
+            // 
+            btn_mapdb.BackgroundImage = (Image)resources.GetObject("btn_mapdb.BackgroundImage");
+            btn_mapdb.BackgroundImageLayout = ImageLayout.Zoom;
+            btn_mapdb.FlatAppearance.BorderSize = 0;
+            btn_mapdb.FlatStyle = FlatStyle.Flat;
+            btn_mapdb.Location = new Point(781, 391);
+            btn_mapdb.Margin = new Padding(4, 5, 4, 5);
+            btn_mapdb.Name = "btn_mapdb";
+            btn_mapdb.Size = new Size(71, 83);
+            btn_mapdb.TabIndex = 20;
+            tt_hover.SetToolTip(btn_mapdb, "Mapped Databases");
+            btn_mapdb.UseVisualStyleBackColor = true;
+            btn_mapdb.Click += btn_mapdb_Click;
+            // 
             // btn_tweak
             // 
             btn_tweak.Location = new Point(703, 508);
@@ -481,24 +519,85 @@
             pcbx_loadinggif.TabIndex = 0;
             pcbx_loadinggif.TabStop = false;
             // 
-            // Btn_Copy
+            // gb_map
             // 
-            Btn_Copy.BackgroundImage = (Image)resources.GetObject("Btn_Copy.BackgroundImage");
-            Btn_Copy.BackgroundImageLayout = ImageLayout.Zoom;
-            Btn_Copy.Location = new Point(660, 508);
-            Btn_Copy.Margin = new Padding(4, 5, 4, 5);
-            Btn_Copy.Name = "Btn_Copy";
-            Btn_Copy.Size = new Size(35, 38);
-            Btn_Copy.TabIndex = 19;
-            Btn_Copy.UseVisualStyleBackColor = true;
-            Btn_Copy.Visible = false;
-            Btn_Copy.Click += Btn_Copy_Click;
+            gb_map.Controls.Add(lbl_mapprogress);
+            gb_map.Controls.Add(btn_deletemap);
+            gb_map.Controls.Add(btn_selectmap);
+            gb_map.Controls.Add(btn_map);
+            gb_map.Controls.Add(lv_maps);
+            gb_map.Controls.Add(btn_backmap);
+            gb_map.Location = new Point(195, 150);
+            gb_map.Name = "gb_map";
+            gb_map.Size = new Size(497, 266);
+            gb_map.TabIndex = 21;
+            gb_map.TabStop = false;
+            gb_map.Text = "Mapped Databases";
+            gb_map.Visible = false;
+            // 
+            // lbl_mapprogress
+            // 
+            lbl_mapprogress.AutoSize = true;
+            lbl_mapprogress.Location = new Point(373, 73);
+            lbl_mapprogress.Name = "lbl_mapprogress";
+            lbl_mapprogress.Size = new Size(0, 25);
+            lbl_mapprogress.TabIndex = 6;
+            // 
+            // btn_deletemap
+            // 
+            btn_deletemap.Location = new Point(373, 164);
+            btn_deletemap.Name = "btn_deletemap";
+            btn_deletemap.Size = new Size(112, 34);
+            btn_deletemap.TabIndex = 5;
+            btn_deletemap.Text = "Delete";
+            btn_deletemap.UseVisualStyleBackColor = true;
+            btn_deletemap.Click += btn_deletemap_Click;
+            // 
+            // btn_selectmap
+            // 
+            btn_selectmap.Location = new Point(373, 120);
+            btn_selectmap.Name = "btn_selectmap";
+            btn_selectmap.Size = new Size(112, 34);
+            btn_selectmap.TabIndex = 3;
+            btn_selectmap.Text = "Select";
+            btn_selectmap.UseVisualStyleBackColor = true;
+            btn_selectmap.Click += btn_selectmap_Click;
+            // 
+            // btn_map
+            // 
+            btn_map.Location = new Point(373, 36);
+            btn_map.Name = "btn_map";
+            btn_map.Size = new Size(112, 34);
+            btn_map.TabIndex = 2;
+            btn_map.Text = "Map";
+            btn_map.UseVisualStyleBackColor = true;
+            btn_map.Click += btn_map_Click;
+            // 
+            // lv_maps
+            // 
+            lv_maps.Location = new Point(14, 37);
+            lv_maps.Name = "lv_maps";
+            lv_maps.Size = new Size(348, 215);
+            lv_maps.TabIndex = 1;
+            lv_maps.UseCompatibleStateImageBehavior = false;
+            lv_maps.View = View.SmallIcon;
+            // 
+            // btn_backmap
+            // 
+            btn_backmap.Location = new Point(405, 218);
+            btn_backmap.Name = "btn_backmap";
+            btn_backmap.Size = new Size(80, 34);
+            btn_backmap.TabIndex = 0;
+            btn_backmap.Text = "Back";
+            btn_backmap.UseVisualStyleBackColor = true;
+            btn_backmap.Click += btn_backmap_Click;
             // 
             // FrmAiPostgre
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(869, 653);
+            Controls.Add(gb_map);
             Controls.Add(Btn_Copy);
             Controls.Add(gb_loading);
             Controls.Add(gb_database);
@@ -514,6 +613,7 @@
             Controls.Add(lbl_title);
             Controls.Add(dgv_airesult);
             Controls.Add(btn_tweak);
+            Controls.Add(btn_mapdb);
             DoubleBuffered = true;
             FormBorderStyle = FormBorderStyle.FixedToolWindow;
             Icon = (Icon)resources.GetObject("$this.Icon");
@@ -532,6 +632,8 @@
             gb_loading.ResumeLayout(false);
             gb_loading.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)pcbx_loadinggif).EndInit();
+            gb_map.ResumeLayout(false);
+            gb_map.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -575,5 +677,13 @@
         private Label lbl_loadstatus;
         private ProgressBar pb_loading;
         private Button Btn_Copy;
+        private Button btn_mapdb;
+        private GroupBox gb_map;
+        private Button btn_backmap;
+        private Button btn_selectmap;
+        private Button btn_map;
+        private ListView lv_maps;
+        private Button btn_deletemap;
+        private Label lbl_mapprogress;
     }
 }
