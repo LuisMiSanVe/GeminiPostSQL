@@ -34,9 +34,15 @@ Simply put that data you just got into the setting windows in the program.
 ## 📖 About the WinForms program
 The interface have a few buttons, being <img src="https://github.com/LuisMiSanVe/GeminiPostSQL/blob/main/AiPostgreWinForms/Resources/key.png" width="20" alt="API Key Settings"> and <img src="https://github.com/LuisMiSanVe/GeminiPostSQL/blob/main/AiPostgreWinForms/Resources/db.png" width="20" alt="Database Settings"> setting windows, for configuring the API Key and the database respectively and <img src="https://github.com/LuisMiSanVe/GeminiPostSQL/blob/main/AiPostgreWinForms/Resources/show.png" width="20" alt="Show SQL">/<img src="https://github.com/LuisMiSanVe/GeminiPostSQL/blob/main/AiPostgreWinForms/Resources/hide.png" width="20" alt="Hide SQL"> to show or hide the AI's generated query.
 
+The <img src="https://github.com/LuisMiSanVe/GeminiPostSQL/blob/main/AiPostgreWinForms/Resources/map.png" width="20" alt="Map DB"> button displays a Mapped Databases Manager, where you can Map into JSON any database you want and select one for future requests to the AI. 
+
+These Mapped Databases are stored in your drive so they'll be always loaded when you start the program. 
+
+Remember that the Mapped Databases are only used in the AI requests, so when you run a tweaked query, it will run on the configured PostgreSQL Server instead.
+
 When you click 'Save' in the Database Settings Window or in the API Key Settings Window (if the 'Remember' box is checked) a file will be created in the internal folder of the program so the next time the program is started, all this data gets loaded automaticly.
 > [!NOTE]
-> It encrypts to the API Key and DB data configuration files using AES with a Specific System Based Method, where the AES Key is made with your system's specs, so if any unwanted person steals those files, they couldn't be decrypted, maintaining your sensitive data secure.
+> The API Key and DB data configuration files are encrypted using AES with a Specific System Based Method, where the AES Key is made with your system's specs, so if any unwanted person steals those files, they couldn't be decrypted, maintaining your sensitive data secure.
 
 **Natural Language to SQL Translation Method:**  
 This method maps the database structure into a JSON that Gemini analyzes to create an SQL query, which is then run by the PostgreSQL Server, returning the requested data.  
