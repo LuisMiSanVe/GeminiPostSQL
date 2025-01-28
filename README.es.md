@@ -36,6 +36,12 @@ Simplemente pon los datos que acabas de conseguir en las pantallas de configurac
 ## 📖 Sobre el programa de WinForms
 La interfaz tiene unos cuantos botones, siendo <img src="https://github.com/LuisMiSanVe/GeminiPostSQL/blob/main/AiPostgreWinForms/Resources/key.png" width="20" alt="API Key Settings"> y <img src="https://github.com/LuisMiSanVe/GeminiPostSQL/blob/main/AiPostgreWinForms/Resources/db.png" width="20" alt="Database Settings"> las pantallas de configuración, de la clave de la API y la base de datos respectivamente y <img src="https://github.com/LuisMiSanVe/GeminiPostSQL/blob/main/AiPostgreWinForms/Resources/show.png" width="20" alt="Show SQL">/<img src="https://github.com/LuisMiSanVe/GeminiPostSQL/blob/main/AiPostgreWinForms/Resources/hide.png" width="20" alt="Hide SQL"> para mostrar u ocultar la consulta creada por la IA.
 
+El botón <img src="https://github.com/LuisMiSanVe/GeminiPostSQL/blob/main/AiPostgreWinForms/Resources/map.png" width="20" alt="Map DB"> saca un Gestor de Bases de Datos Mapeadas, en el que puedes Mapear a JSON cualquier base de datos que quieras y seleccionarla para usarla en futuras solicitudes a la IA. 
+
+Estas Bases de Datos Mapeadas se guardan en tu disco por lo que siempre se cargarán al iniciar el programa. 
+
+Recuerda que las Bases de Datos Mapeadas solo se usan al hacer una solicitud a la IA, por lo que si estás modificando una sentencia y la ejecutas, esta correrá en el Servidor PostgreSQL que tengas configurado.
+
 Al hacer clic en 'Save' en la pantalla de Configuración de la  Base de  Datos o en la de Configuración de la clave de la API (si la caja de 'Remember' está marcada) un archivo se creará en la carpeta interna del programa para que la siguiente vez que se inicie, todos esos datos se carguen automaticamente.
 > [!NOTE]
 > Se encripta los ficheros de configuración de la API Key y los datos de la BBDD usando AES con un Método Basado en Sistemas Especificos, en la que se crea la clave AES con la información de tu equipo, por lo que si alguna persona indeseada roba esos ficheros, no podrían ser desencriptados, manteniendo tus datos sensibles a salvo.
