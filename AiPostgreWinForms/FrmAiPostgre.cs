@@ -814,18 +814,24 @@ namespace AiPostgreWinForms
                             WriteIndented = true // JSON format
                         };
 
-                        if (!Directory.Exists("MappedDB"))
-                            Directory.CreateDirectory("MappedDB");
-                        File.WriteAllText("MappedDB\\" + txt_db.Text + ".json", System.Text.Json.JsonSerializer.Serialize(tables, opcions));
+                        try
+                        {
+                            if (!Directory.Exists("MappedDB"))
+                                Directory.CreateDirectory("MappedDB");
+                            File.WriteAllText("MappedDB\\" + txt_db.Text + ".json", System.Text.Json.JsonSerializer.Serialize(tables, opcions));
 
+                            lv_maps.Invoke((MethodInvoker)(() =>
+                            {
+                                lv_maps.Items.Add(txt_db.Text);
+                            }));
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show("The Mapped Database couldn't be saved in your drive, make sure the installation path have the necessary permissions or start the program as Administrator.","Permissions Error",MessageBoxButtons.OK,MessageBoxIcon.Error);
+                        }
                         gb_map.Invoke((MethodInvoker)(() =>
                         {
                             gb_map.Enabled = true;
-                        }));
-
-                        lv_maps.Invoke((MethodInvoker)(() =>
-                        {
-                            lv_maps.Items.Add(txt_db.Text);
                         }));
                     }
                 });
@@ -862,9 +868,16 @@ namespace AiPostgreWinForms
                 var result = MessageBox.Show("Are you sure you want to delete this Mapped Database?", "Delete Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                 if (result == DialogResult.Yes)
                 {
-                    File.Delete("MappedDB\\" + lv_maps.FocusedItem.Text + ".json");
-                    json = "";
-                    lv_maps.FocusedItem.Remove();
+                    try
+                    {
+                        File.Delete("MappedDB\\" + lv_maps.FocusedItem.Text + ".json");
+                        json = "";
+                        lv_maps.FocusedItem.Remove();
+                    }
+                    catch (Exception ex) 
+                    {
+                        MessageBox.Show("The Mapped Database couldn't be deleted from your drive, make sure the installation path have the necessary permissions or start the program as Administrator.", "Permissions Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
             }
         }
