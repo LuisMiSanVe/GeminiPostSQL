@@ -75,6 +75,7 @@ namespace AiPostgreWinForms
             // Load the Mapped Databases
             if (Directory.Exists("MappedDB"))
             {
+                lv_maps.Items.Clear();
                 for (int i = 0; i < Directory.EnumerateFiles("MappedDB").Count(); i++)
                 {
                     lv_maps.Items.Add(Directory.GetFiles("MappedDB")[i].Remove(0, 9).Replace(".json", ""));
@@ -550,6 +551,9 @@ namespace AiPostgreWinForms
             btn_tweak.Enabled = true;
             Btn_Copy.Enabled = true;
             btn_mapdb.Enabled = true;
+
+            // Discard the changes
+            FrmAiPostgre_Load(sender, e);
         }
 
         private void btn_keyback_Click(object sender, EventArgs e)
@@ -567,6 +571,9 @@ namespace AiPostgreWinForms
             btn_tweak.Enabled = true;
             Btn_Copy.Enabled = true;
             btn_mapdb.Enabled = true;
+
+            // Discard the changes
+            FrmAiPostgre_Load(sender,e);
         }
 
         private void FrmAiPostgre_FormClosing(object sender, FormClosingEventArgs e)
@@ -827,7 +834,7 @@ namespace AiPostgreWinForms
                         }
                         catch (Exception ex)
                         {
-                            MessageBox.Show("The Mapped Database couldn't be saved in your drive, make sure the installation path have the necessary permissions or start the program as Administrator.","Permissions Error",MessageBoxButtons.OK,MessageBoxIcon.Error);
+                            MessageBox.Show("The Mapped Database couldn't be saved in your drive, make sure the installation path have the necessary permissions or start the program as Administrator.", "Permissions Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
                     }
                     gb_map.Invoke((MethodInvoker)(() =>
@@ -847,17 +854,40 @@ namespace AiPostgreWinForms
         {
             if (lv_maps.FocusedItem != null)
             {
-                json = File.ReadAllText("MappedDB\\" + lv_maps.FocusedItem.Text + ".json");
-                // I change the colors to identify the selected map
-                foreach (ListViewItem item in lv_maps.Items)
+                if (tt_hover.GetToolTip(btn_selectmap).Equals("Select Map"))
                 {
-                    item.BackColor = Color.White;
-                    item.ForeColor = Color.Black;
-                }
-                lv_maps.FocusedItem.BackColor = Color.FromArgb(255, 142, 188, 237); //8EBCED
-                lv_maps.FocusedItem.ForeColor = Color.FromArgb(255, 182, 13, 216); //B60DD8
+                    json = File.ReadAllText("MappedDB\\" + lv_maps.FocusedItem.Text + ".json");
+                    // I change the colors to identify the selected map
+                    foreach (ListViewItem item in lv_maps.Items)
+                    {
+                        item.BackColor = Color.White;
+                        item.ForeColor = Color.Black;
+                    }
+                    lv_maps.FocusedItem.BackColor = Color.FromArgb(255, 142, 188, 237); //8EBCED
+                    lv_maps.FocusedItem.ForeColor = Color.FromArgb(255, 182, 13, 216); //B60DD8
 
-                lv_maps.FocusedItem.Selected = false;
+                    lv_maps.FocusedItem.Selected = false;
+                    lv_maps.FocusedItem = null;
+
+                    btn_selectmap.BackgroundImage = il_selectimages.Images[1];
+                    tt_hover.SetToolTip(btn_selectmap, "Unselect Map");
+                }
+                else
+                {
+                    json = "";
+                    // I revert the colors
+                    foreach (ListViewItem item in lv_maps.Items)
+                    {
+                        item.BackColor = Color.White;
+                        item.ForeColor = Color.Black;
+                    }
+
+                    lv_maps.FocusedItem.Selected = false;
+                    lv_maps.FocusedItem = null;
+
+                    btn_selectmap.BackgroundImage = il_selectimages.Images[0];
+                    tt_hover.SetToolTip(btn_selectmap, "Select Map");
+                }
             }
         }
 
@@ -874,10 +904,29 @@ namespace AiPostgreWinForms
                         json = "";
                         lv_maps.FocusedItem.Remove();
                     }
-                    catch (Exception ex) 
+                    catch (Exception ex)
                     {
                         MessageBox.Show("The Mapped Database couldn't be deleted from your drive, make sure the installation path have the necessary permissions or start the program as Administrator.", "Permissions Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
+                }
+            }
+        }
+
+        private void lv_maps_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (lv_maps.FocusedItem != null)
+            {
+                if (lv_maps.FocusedItem.BackColor == Color.FromArgb(255, 142, 188, 237) &&
+                    lv_maps.FocusedItem.ForeColor == Color.FromArgb(255, 182, 13, 216) &&
+                    json != "")
+                {
+                    btn_selectmap.BackgroundImage = il_selectimages.Images[1];
+                    tt_hover.SetToolTip(btn_selectmap, "Unselect Map");
+                }
+                else
+                {
+                    btn_selectmap.BackgroundImage = il_selectimages.Images[0];
+                    tt_hover.SetToolTip(btn_selectmap, "Select Map");
                 }
             }
         }

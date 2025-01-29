@@ -65,17 +65,19 @@
             Btn_Copy = new Button();
             btn_mapdb = new Button();
             btn_tweak = new Button();
+            btn_deletemap = new Button();
+            btn_selectmap = new Button();
+            btn_map = new Button();
+            btn_backmap = new Button();
             gb_loading = new GroupBox();
             pb_loading = new ProgressBar();
             lbl_loadstatus = new Label();
             pcbx_loadinggif = new PictureBox();
             gb_map = new GroupBox();
             lbl_mapprogress = new Label();
-            btn_deletemap = new Button();
-            btn_selectmap = new Button();
-            btn_map = new Button();
             lv_maps = new ListView();
-            btn_backmap = new Button();
+            pcbx_background = new PictureBox();
+            il_selectimages = new ImageList(components);
             ((System.ComponentModel.ISupportInitialize)dgv_airesult).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pcbx_icon).BeginInit();
             gb_key.SuspendLayout();
@@ -83,6 +85,7 @@
             gb_loading.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pcbx_loadinggif).BeginInit();
             gb_map.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)pcbx_background).BeginInit();
             SuspendLayout();
             // 
             // btn_keysettings
@@ -117,12 +120,14 @@
             // 
             // btn_send
             // 
+            btn_send.BackgroundImage = (Image)resources.GetObject("btn_send.BackgroundImage");
+            btn_send.BackgroundImageLayout = ImageLayout.Zoom;
             btn_send.Location = new Point(703, 556);
             btn_send.Margin = new Padding(4, 5, 4, 5);
             btn_send.Name = "btn_send";
             btn_send.Size = new Size(71, 38);
             btn_send.TabIndex = 4;
-            btn_send.Text = "Send";
+            tt_hover.SetToolTip(btn_send, "Send Request");
             btn_send.UseVisualStyleBackColor = true;
             btn_send.Click += btn_send_Click;
             // 
@@ -187,7 +192,7 @@
             // 
             llbl_github.AutoSize = true;
             llbl_github.Font = new Font("Arial", 6.75F, FontStyle.Italic, GraphicsUnit.Point, 0);
-            llbl_github.Location = new Point(13, 628);
+            llbl_github.Location = new Point(448, 628);
             llbl_github.Margin = new Padding(4, 0, 4, 0);
             llbl_github.Name = "llbl_github";
             llbl_github.Size = new Size(408, 16);
@@ -214,6 +219,8 @@
             il_showimages.TransparentColor = Color.Transparent;
             il_showimages.Images.SetKeyName(0, "show.png");
             il_showimages.Images.SetKeyName(1, "hide.png");
+            il_showimages.Images.SetKeyName(2, "select.png");
+            il_showimages.Images.SetKeyName(3, "unselect.png");
             // 
             // gb_key
             // 
@@ -235,22 +242,26 @@
             // 
             // btn_keyback
             // 
-            btn_keyback.Location = new Point(21, 174);
+            btn_keyback.BackgroundImage = (Image)resources.GetObject("btn_keyback.BackgroundImage");
+            btn_keyback.BackgroundImageLayout = ImageLayout.Zoom;
+            btn_keyback.Location = new Point(21, 170);
             btn_keyback.Name = "btn_keyback";
-            btn_keyback.Size = new Size(112, 34);
+            btn_keyback.Size = new Size(71, 38);
             btn_keyback.TabIndex = 6;
-            btn_keyback.Text = "Back";
+            tt_hover.SetToolTip(btn_keyback, "Back");
             btn_keyback.UseVisualStyleBackColor = true;
             btn_keyback.Click += btn_keyback_Click;
             // 
             // btn_saveapi
             // 
-            btn_saveapi.Location = new Point(359, 170);
+            btn_saveapi.BackgroundImage = (Image)resources.GetObject("btn_saveapi.BackgroundImage");
+            btn_saveapi.BackgroundImageLayout = ImageLayout.Zoom;
+            btn_saveapi.Location = new Point(375, 170);
             btn_saveapi.Margin = new Padding(4, 5, 4, 5);
             btn_saveapi.Name = "btn_saveapi";
-            btn_saveapi.Size = new Size(107, 38);
+            btn_saveapi.Size = new Size(71, 38);
             btn_saveapi.TabIndex = 5;
-            btn_saveapi.Text = "Save";
+            tt_hover.SetToolTip(btn_saveapi, "Save");
             btn_saveapi.UseVisualStyleBackColor = true;
             btn_saveapi.Click += btn_saveapi_Click;
             // 
@@ -324,12 +335,14 @@
             // 
             // btn_dbback
             // 
+            btn_dbback.BackgroundImage = (Image)resources.GetObject("btn_dbback.BackgroundImage");
+            btn_dbback.BackgroundImageLayout = ImageLayout.Zoom;
             btn_dbback.Location = new Point(22, 343);
             btn_dbback.Margin = new Padding(4, 5, 4, 5);
             btn_dbback.Name = "btn_dbback";
-            btn_dbback.Size = new Size(107, 38);
+            btn_dbback.Size = new Size(78, 38);
             btn_dbback.TabIndex = 11;
-            btn_dbback.Text = "Back";
+            tt_hover.SetToolTip(btn_dbback, "Back");
             btn_dbback.UseVisualStyleBackColor = true;
             btn_dbback.Click += btn_dbback_Click;
             // 
@@ -355,12 +368,14 @@
             // 
             // btn_savedb
             // 
-            btn_savedb.Location = new Point(189, 343);
+            btn_savedb.BackgroundImage = (Image)resources.GetObject("btn_savedb.BackgroundImage");
+            btn_savedb.BackgroundImageLayout = ImageLayout.Zoom;
+            btn_savedb.Location = new Point(219, 343);
             btn_savedb.Margin = new Padding(4, 5, 4, 5);
             btn_savedb.Name = "btn_savedb";
-            btn_savedb.Size = new Size(107, 38);
+            btn_savedb.Size = new Size(77, 38);
             btn_savedb.TabIndex = 8;
-            btn_savedb.Text = "Save";
+            tt_hover.SetToolTip(btn_savedb, "Save");
             btn_savedb.UseVisualStyleBackColor = true;
             btn_savedb.Click += btn_savedb_Click;
             // 
@@ -433,9 +448,9 @@
             lbl_ip.Location = new Point(9, 32);
             lbl_ip.Margin = new Padding(4, 0, 4, 0);
             lbl_ip.Name = "lbl_ip";
-            lbl_ip.Size = new Size(103, 25);
+            lbl_ip.Size = new Size(101, 25);
             lbl_ip.TabIndex = 0;
-            lbl_ip.Text = "IP and Port:";
+            lbl_ip.Text = "IP Address:";
             // 
             // Btn_Copy
             // 
@@ -468,15 +483,65 @@
             // 
             // btn_tweak
             // 
+            btn_tweak.BackgroundImage = (Image)resources.GetObject("btn_tweak.BackgroundImage");
+            btn_tweak.BackgroundImageLayout = ImageLayout.Zoom;
             btn_tweak.Location = new Point(703, 508);
             btn_tweak.Margin = new Padding(4, 5, 4, 5);
             btn_tweak.Name = "btn_tweak";
             btn_tweak.Size = new Size(71, 38);
             btn_tweak.TabIndex = 17;
-            btn_tweak.Text = "Run";
+            tt_hover.SetToolTip(btn_tweak, "Run in Server");
             btn_tweak.UseVisualStyleBackColor = true;
             btn_tweak.Visible = false;
             btn_tweak.Click += btn_tweak_Click;
+            // 
+            // btn_deletemap
+            // 
+            btn_deletemap.BackgroundImage = (Image)resources.GetObject("btn_deletemap.BackgroundImage");
+            btn_deletemap.BackgroundImageLayout = ImageLayout.Zoom;
+            btn_deletemap.Location = new Point(435, 172);
+            btn_deletemap.Name = "btn_deletemap";
+            btn_deletemap.Size = new Size(50, 50);
+            btn_deletemap.TabIndex = 5;
+            tt_hover.SetToolTip(btn_deletemap, "Delete Map");
+            btn_deletemap.UseVisualStyleBackColor = true;
+            btn_deletemap.Click += btn_deletemap_Click;
+            // 
+            // btn_selectmap
+            // 
+            btn_selectmap.BackgroundImage = (Image)resources.GetObject("btn_selectmap.BackgroundImage");
+            btn_selectmap.BackgroundImageLayout = ImageLayout.Zoom;
+            btn_selectmap.Location = new Point(435, 114);
+            btn_selectmap.Name = "btn_selectmap";
+            btn_selectmap.Size = new Size(50, 50);
+            btn_selectmap.TabIndex = 3;
+            tt_hover.SetToolTip(btn_selectmap, "Select Map");
+            btn_selectmap.UseVisualStyleBackColor = true;
+            btn_selectmap.Click += btn_selectmap_Click;
+            // 
+            // btn_map
+            // 
+            btn_map.BackgroundImage = (Image)resources.GetObject("btn_map.BackgroundImage");
+            btn_map.BackgroundImageLayout = ImageLayout.Zoom;
+            btn_map.Location = new Point(435, 55);
+            btn_map.Name = "btn_map";
+            btn_map.Size = new Size(50, 50);
+            btn_map.TabIndex = 2;
+            tt_hover.SetToolTip(btn_map, "Map current database");
+            btn_map.UseVisualStyleBackColor = true;
+            btn_map.Click += btn_map_Click;
+            // 
+            // btn_backmap
+            // 
+            btn_backmap.BackgroundImage = (Image)resources.GetObject("btn_backmap.BackgroundImage");
+            btn_backmap.BackgroundImageLayout = ImageLayout.Zoom;
+            btn_backmap.Location = new Point(14, 248);
+            btn_backmap.Name = "btn_backmap";
+            btn_backmap.Size = new Size(80, 34);
+            btn_backmap.TabIndex = 0;
+            tt_hover.SetToolTip(btn_backmap, "Back");
+            btn_backmap.UseVisualStyleBackColor = true;
+            btn_backmap.Click += btn_backmap_Click;
             // 
             // gb_loading
             // 
@@ -529,7 +594,7 @@
             gb_map.Controls.Add(btn_backmap);
             gb_map.Location = new Point(195, 150);
             gb_map.Name = "gb_map";
-            gb_map.Size = new Size(497, 266);
+            gb_map.Size = new Size(497, 296);
             gb_map.TabIndex = 21;
             gb_map.TabStop = false;
             gb_map.Text = "Mapped Databases";
@@ -538,59 +603,38 @@
             // lbl_mapprogress
             // 
             lbl_mapprogress.AutoSize = true;
-            lbl_mapprogress.Location = new Point(373, 73);
+            lbl_mapprogress.Location = new Point(211, 252);
             lbl_mapprogress.Name = "lbl_mapprogress";
             lbl_mapprogress.Size = new Size(0, 25);
             lbl_mapprogress.TabIndex = 6;
-            // 
-            // btn_deletemap
-            // 
-            btn_deletemap.Location = new Point(373, 164);
-            btn_deletemap.Name = "btn_deletemap";
-            btn_deletemap.Size = new Size(112, 34);
-            btn_deletemap.TabIndex = 5;
-            btn_deletemap.Text = "Delete";
-            btn_deletemap.UseVisualStyleBackColor = true;
-            btn_deletemap.Click += btn_deletemap_Click;
-            // 
-            // btn_selectmap
-            // 
-            btn_selectmap.Location = new Point(373, 120);
-            btn_selectmap.Name = "btn_selectmap";
-            btn_selectmap.Size = new Size(112, 34);
-            btn_selectmap.TabIndex = 3;
-            btn_selectmap.Text = "Select";
-            btn_selectmap.UseVisualStyleBackColor = true;
-            btn_selectmap.Click += btn_selectmap_Click;
-            // 
-            // btn_map
-            // 
-            btn_map.Location = new Point(373, 36);
-            btn_map.Name = "btn_map";
-            btn_map.Size = new Size(112, 34);
-            btn_map.TabIndex = 2;
-            btn_map.Text = "Map";
-            btn_map.UseVisualStyleBackColor = true;
-            btn_map.Click += btn_map_Click;
             // 
             // lv_maps
             // 
             lv_maps.Location = new Point(14, 37);
             lv_maps.Name = "lv_maps";
-            lv_maps.Size = new Size(348, 215);
+            lv_maps.Size = new Size(412, 205);
             lv_maps.TabIndex = 1;
             lv_maps.UseCompatibleStateImageBehavior = false;
             lv_maps.View = View.SmallIcon;
+            lv_maps.SelectedIndexChanged += lv_maps_SelectedIndexChanged;
             // 
-            // btn_backmap
+            // pcbx_background
             // 
-            btn_backmap.Location = new Point(405, 218);
-            btn_backmap.Name = "btn_backmap";
-            btn_backmap.Size = new Size(80, 34);
-            btn_backmap.TabIndex = 0;
-            btn_backmap.Text = "Back";
-            btn_backmap.UseVisualStyleBackColor = true;
-            btn_backmap.Click += btn_backmap_Click;
+            pcbx_background.BackgroundImage = (Image)resources.GetObject("pcbx_background.BackgroundImage");
+            pcbx_background.BackgroundImageLayout = ImageLayout.Stretch;
+            pcbx_background.Location = new Point(0, 255);
+            pcbx_background.Name = "pcbx_background";
+            pcbx_background.Size = new Size(400, 400);
+            pcbx_background.TabIndex = 22;
+            pcbx_background.TabStop = false;
+            // 
+            // il_selectimages
+            // 
+            il_selectimages.ColorDepth = ColorDepth.Depth32Bit;
+            il_selectimages.ImageStream = (ImageListStreamer)resources.GetObject("il_selectimages.ImageStream");
+            il_selectimages.TransparentColor = Color.Transparent;
+            il_selectimages.Images.SetKeyName(0, "select.png");
+            il_selectimages.Images.SetKeyName(1, "unselect.png");
             // 
             // FrmAiPostgre
             // 
@@ -598,10 +642,10 @@
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(869, 653);
             Controls.Add(gb_map);
-            Controls.Add(Btn_Copy);
             Controls.Add(gb_loading);
-            Controls.Add(gb_database);
             Controls.Add(gb_key);
+            Controls.Add(gb_database);
+            Controls.Add(Btn_Copy);
             Controls.Add(pcbx_icon);
             Controls.Add(llbl_github);
             Controls.Add(btn_dbsettings);
@@ -614,6 +658,7 @@
             Controls.Add(dgv_airesult);
             Controls.Add(btn_tweak);
             Controls.Add(btn_mapdb);
+            Controls.Add(pcbx_background);
             DoubleBuffered = true;
             FormBorderStyle = FormBorderStyle.FixedToolWindow;
             Icon = (Icon)resources.GetObject("$this.Icon");
@@ -634,6 +679,7 @@
             ((System.ComponentModel.ISupportInitialize)pcbx_loadinggif).EndInit();
             gb_map.ResumeLayout(false);
             gb_map.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)pcbx_background).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -685,5 +731,7 @@
         private ListView lv_maps;
         private Button btn_deletemap;
         private Label lbl_mapprogress;
+        private PictureBox pcbx_background;
+        private ImageList il_selectimages;
     }
 }
