@@ -603,7 +603,7 @@
             // lbl_mapprogress
             // 
             lbl_mapprogress.AutoSize = true;
-            lbl_mapprogress.Location = new Point(211, 252);
+            lbl_mapprogress.Location = new Point(100, 253);
             lbl_mapprogress.Name = "lbl_mapprogress";
             lbl_mapprogress.Size = new Size(0, 25);
             lbl_mapprogress.TabIndex = 6;

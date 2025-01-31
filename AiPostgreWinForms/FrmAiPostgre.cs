@@ -24,8 +24,11 @@ namespace AiPostgreWinForms
         public static string json = "";
 
         // Encryption Data
-        public static string key;
-        public static string iv;
+        public static string key = "";
+        public static string iv = "";
+
+        // Other Data
+        public static string currentmap = "";
 
         public FrmAiPostgre()
         {
@@ -79,6 +82,13 @@ namespace AiPostgreWinForms
                 for (int i = 0; i < Directory.EnumerateFiles("MappedDB").Count(); i++)
                 {
                     lv_maps.Items.Add(Directory.GetFiles("MappedDB")[i].Remove(0, 9).Replace(".json", ""));
+
+                    if (currentmap != "")
+                        if (lv_maps.Items[i].Text == currentmap)
+                        {
+                            lv_maps.Items[i].BackColor = Color.FromArgb(255, 142, 188, 237); //8EBCED
+                            lv_maps.Items[i].ForeColor = Color.FromArgb(255, 182, 13, 216); //B60DD8
+                        }
                 }
             }
 
@@ -212,8 +222,9 @@ namespace AiPostgreWinForms
                     Btn_Copy.Enabled = true;
                     btn_mapdb.Enabled = true;
 
-                    // Empties the possible mapped database
-                    json = "";
+                    // Empties the possible mapped database if is not a saved map
+                    if (currentmap == "")
+                        json = "";
                 }
                 catch (Exception)
                 {
@@ -866,6 +877,8 @@ namespace AiPostgreWinForms
                     lv_maps.FocusedItem.BackColor = Color.FromArgb(255, 142, 188, 237); //8EBCED
                     lv_maps.FocusedItem.ForeColor = Color.FromArgb(255, 182, 13, 216); //B60DD8
 
+                    currentmap = lv_maps.FocusedItem.Text;
+
                     lv_maps.FocusedItem.Selected = false;
                     lv_maps.FocusedItem = null;
 
@@ -881,6 +894,8 @@ namespace AiPostgreWinForms
                         item.BackColor = Color.White;
                         item.ForeColor = Color.Black;
                     }
+
+                    currentmap = "";
 
                     lv_maps.FocusedItem.Selected = false;
                     lv_maps.FocusedItem = null;
