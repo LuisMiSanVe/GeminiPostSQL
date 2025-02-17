@@ -404,12 +404,13 @@ namespace AiPostgreWinForms
                                 {
                                     lbl_loadstatus.Text = "Generating...";
                                 }));
-                                try
+                                try 
                                 {
                                     var response = Client.Post(request);
                                     var resp = JsonDocument.Parse(response.Content);
                                     // It extracts the AI's response from the 'Text' field                                                                                      and I remove the SQL Code style the AI adds
                                     generatedSql = resp.RootElement.GetProperty("candidates")[0].GetProperty("content").GetProperty("parts")[0].GetProperty("text").GetString().Replace("```sql", "").Replace("```", "").Replace('\n', ' ').Trim();
+                                    generatedSql = Regex.Replace(generatedSql, @"\s+", " ");
                                     tb_aiquery.Text = generatedSql;
                                 }
                                 catch (HttpRequestException ex)
