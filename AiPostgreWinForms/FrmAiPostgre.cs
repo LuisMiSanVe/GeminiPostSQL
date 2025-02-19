@@ -91,10 +91,6 @@ namespace AiPostgreWinForms
                         }
                 }
             }
-
-            // Load text hints
-            tb_userrequest.ForeColor = Color.Gray;
-            tb_userrequest.Text = "Request...";
         }
 
         private void llbl_github_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)

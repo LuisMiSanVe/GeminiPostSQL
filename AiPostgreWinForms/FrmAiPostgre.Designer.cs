@@ -133,11 +133,13 @@
             // 
             // tb_userrequest
             // 
+            tb_userrequest.ForeColor = Color.Gray;
             tb_userrequest.Location = new Point(17, 560);
             tb_userrequest.Margin = new Padding(4, 5, 4, 5);
             tb_userrequest.Name = "tb_userrequest";
             tb_userrequest.Size = new Size(675, 31);
             tb_userrequest.TabIndex = 5;
+            tb_userrequest.Text = "Request...";
             tb_userrequest.Enter += tb_userrequest_Enter;
             tb_userrequest.KeyDown += tb_userrequest_KeyDown;
             tb_userrequest.Leave += tb_userrequest_Leave;
