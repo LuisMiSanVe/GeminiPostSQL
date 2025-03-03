@@ -11,7 +11,7 @@
 [![image](https://img.shields.io/badge/Visual_Studio-5C2D91?style=for-the-badge&logo=visual%20studio&logoColor=white)](https://visualstudio.microsoft.com/)
 
 >[!NOTE]
-> This is the WinForms version meant for client use. There is a [REST API](https://github.com/LuisMiSanVe/AIPostgreAssistant_API/tree/main) version meant for servers and client use by Swagger interface.
+> This is the WinForms version meant for client use. There is a [REST API](https://github.com/LuisMiSanVe/GeminiPostSQL_API/tree/main) version meant for servers and client use by Swagger interface.
 
 This WinForms program uses Google's AI 'Gemini 1.5 Flash' to make queries to PostgreSQL databases.  
 The AI interprets natural language into SQL queries using one method, with its pros and cons.
