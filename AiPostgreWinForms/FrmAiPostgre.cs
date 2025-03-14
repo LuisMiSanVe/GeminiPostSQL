@@ -16,7 +16,7 @@ namespace AiPostgreWinForms
     {
         // Gemini API Data
         public static string endpoint = "https://generativelanguage.googleapis.com"; // Resource
-        public static string uri = "/v1beta/models/gemini-1.5-flash-latest:generateContent?key="; // Model URI
+        public static string uri = "/v1beta/models/gemini-2.0-flash:generateContent?key="; // Model URI
         public static string apikey = ""; // API Key
 
         // Database Data
@@ -50,6 +50,8 @@ namespace AiPostgreWinForms
                     File.Delete("apisettings.conf");
                 if (File.Exists("dbsettings.conf"))
                     File.Delete("dbsettings.conf");
+                if (Directory.Exists("MappedDB"))
+                    Directory.Delete("MappedDB");
             }
 
             // Load saved API Key if remembered is checked
@@ -407,7 +409,10 @@ namespace AiPostgreWinForms
                                     // It extracts the AI's response from the 'Text' field                                                                                      and I remove the SQL Code style the AI adds
                                     generatedSql = resp.RootElement.GetProperty("candidates")[0].GetProperty("content").GetProperty("parts")[0].GetProperty("text").GetString().Replace("```sql", "").Replace("```", "").Replace('\n', ' ').Trim();
                                     generatedSql = Regex.Replace(generatedSql, @"\s+", " ");
-                                    tb_aiquery.Text = generatedSql;
+                                    tb_aiquery.Invoke((MethodInvoker)(() =>
+                                    {
+                                        tb_aiquery.Text = generatedSql;
+                                    }));
                                 }
                                 catch (HttpRequestException ex)
                                 {
@@ -419,7 +424,7 @@ namespace AiPostgreWinForms
                                 }
                                 catch (Exception ex)
                                 {
-                                    MessageBox.Show("The provided Gemini API Key has failed to access the endpoint, make sure the API Key or Service is functional", "API Key failed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                    MessageBox.Show("The provided Gemini API Key has failed to access the endpoint, make sure the API Key or Service is functional", "API Key failed (" + ex.Message + ")", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                                     gb_key.Invoke((MethodInvoker)(() =>
                                     {
                                         btn_keysettings_Click(null, null);
