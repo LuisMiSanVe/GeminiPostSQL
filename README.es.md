@@ -11,7 +11,7 @@
 [![image](https://img.shields.io/badge/Visual_Studio-5C2D91?style=for-the-badge&logo=visual%20studio&logoColor=white)](https://visualstudio.microsoft.com/)
 
 >[!NOTE]
-> Esta es la versión de WinForms pensada para ser usada como cliente. Hay una versión de [REST API](https://github.com/LuisMiSanVe/GeminiPostSQL_API/blob/main/README.es.md) pensada para su uso en servidores o clientes con la interfaz de Swagger.
+> Esta es la versión de WinForms pensada para ser usada como cliente. Hay una versión de [REST API](https://github.com/LuisMiSanVe/GeminiPostSQL_API/blob/main/README.es.md) pensada para su uso en servidores con Swagger y un [ChatBot](https://github.com/LuisMiSanVe/GeminiPostSQL_ChatBot/tree/main) de Blazor como cliente web.
 
 Este WinForms usa la IA de Google 'Gemini 1.5 Flash' para generar consultas a bases de datos PostgreSQL.  
 La IA convierte lenguaje natural a consultas SQL usando un método con sus ventajas y desventajas.
