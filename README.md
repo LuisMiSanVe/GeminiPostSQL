@@ -13,7 +13,7 @@
 >[!NOTE]
 > This is the WinForms version meant for client use. There is a [REST API](https://github.com/LuisMiSanVe/GeminiPostSQL_API/tree/main) version meant for servers with Swagger and a [ChatBot](https://github.com/LuisMiSanVe/GeminiPostSQL_ChatBot/tree/main) in Blazor for web clients.
 
-This WinForms program uses Google's AI 'Gemini 1.5 Flash' to make queries to PostgreSQL databases.  
+This WinForms program uses Google's AI 'Gemini 2.0 Flash' to make queries to PostgreSQL databases.  
 The AI interprets natural language into SQL queries using one method, with its pros and cons.
 
 ## 📋 Prerequisites
@@ -71,7 +71,7 @@ The version number will follow this format: \
 - Other:
   - [PostgreSQL](https://www.postgresql.org/) (16.3)
   - [pgAdmin 4](https://www.pgadmin.org/) (8.9)
-  - Gemini API Key (1.5 Flash)
+  - Gemini API Key (2.0 Flash)
   - Images (Icons source, later retouched by me):
     - [FreeIcons](https://freeicons.io/)
     - [Depositphotos](https://depositphotos.com/vector/coarse-halftone-dots-pattern-gradient-in-vector-format-82396024.html)
