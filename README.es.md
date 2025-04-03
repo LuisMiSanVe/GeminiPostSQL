@@ -13,7 +13,7 @@
 >[!NOTE]
 > Esta es la versión de WinForms pensada para ser usada como cliente. Hay una versión de [REST API](https://github.com/LuisMiSanVe/GeminiPostSQL_API/blob/main/README.es.md) pensada para su uso en servidores con Swagger y un [ChatBot](https://github.com/LuisMiSanVe/GeminiPostSQL_ChatBot/tree/main) de Blazor como cliente web.
 
-Este WinForms usa la IA de Google 'Gemini 1.5 Flash' para generar consultas a bases de datos PostgreSQL.  
+Este WinForms usa la IA de Google 'Gemini 2.0 Flash' para generar consultas a bases de datos PostgreSQL.  
 La IA convierte lenguaje natural a consultas SQL usando un método con sus ventajas y desventajas.
 
 ## 📋 Prerequisitos
@@ -73,7 +73,7 @@ El número de la versión seguirá este formato: \
 - Otros:
   - [PostgreSQL](https://www.postgresql.org/) (16.3)
   - [pgAdmin 4](https://www.pgadmin.org/) (8.9)
-  - Gemini API Key (1.5 Flash)
+  - Gemini API Key (2.0 Flash)
   - [FreeIcons](https://freeicons.io/) (Fuente original de los iconos, luego retocados por mi)
   - [Microsoft Visual Studio Installer Projects 2022](https://marketplace.visualstudio.com/items?itemName=VisualStudioClient.MicrosoftVisualStudio2022InstallerProjects) (2.0.1)
 - IDE Recomendado: [Visual Studio](https://visualstudio.microsoft.com/) 2022
