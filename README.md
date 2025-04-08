@@ -45,10 +45,10 @@ Remember that the Mapped Databases are only used in the AI requests, so when you
 
 When you click 'Save' in the Database Settings Window or in the API Key Settings Window (if the 'Remember' box is checked) a file will be created in the internal folder of the program so the next time the program is started, all this data gets loaded automaticly.
 > [!NOTE]
-> The API Key and DB data configuration files are encrypted using AES with a Specific System Based Method, where the AES Key is made with your system's specs, so if any unwanted person steals those files, they couldn't be decrypted, maintaining your sensitive data secure.
+> The API Key and DB data configuration files are encrypted using AES with a [Specific System Based Method](https://gist.github.com/LuisMiSanVe/6b3c53cbfc4fcd75d816377bb6eb06b5), where the AES Key is made with your system's specs, so if any unwanted person steals those files, they couldn't be decrypted, maintaining your sensitive data secure.
 
-**Natural Language to SQL Translation Method:**  
-This method maps the database structure into a JSON that Gemini analyzes to create an SQL query, which is then run by the PostgreSQL Server, returning the requested data.  
+**[Natural Language to SQL Translation Method:](https://gist.github.com/LuisMiSanVe/2da8e2d932a06ef408b3ee8468d0d820)**  
+This method maps the database structure into a JSON that Gemini analyzes ([with this prompt](https://gist.github.com/LuisMiSanVe/b189c8920d2dcedf5fd46485f3403d51)) to create an SQL query, which is then run by the PostgreSQL Server, returning the requested data.  
 Since this method does not map the database values, token usage is lower, and the data is more reliable because it comes directly from the PostgreSQL Server. However, it doesn't completely prevent AI-generated errors. Occasionally, the SQL query might fail due to non-existing columns, in which case you should check the generated query to detect the error.
 
 ## 🚀 Releases
