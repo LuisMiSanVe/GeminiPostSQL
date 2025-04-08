@@ -47,10 +47,10 @@ Recuerda que las Bases de Datos Mapeadas solo se usan al hacer una solicitud a l
 
 Al hacer clic en 'Save' en la pantalla de Configuración de la  Base de  Datos o en la de Configuración de la clave de la API (si la caja de 'Remember' está marcada) un archivo se creará en la carpeta interna del programa para que la siguiente vez que se inicie, todos esos datos se carguen automaticamente.
 > [!NOTE]
-> Se encripta los ficheros de configuración de la API Key y los datos de la BBDD usando AES con un Método Basado en Sistemas Especificos, en la que se crea la clave AES con la información de tu equipo, por lo que si alguna persona indeseada roba esos ficheros, no podrían ser desencriptados, manteniendo tus datos sensibles a salvo.
+> Se encripta los ficheros de configuración de la API Key y los datos de la BBDD usando AES con un [Método Basado en Sistemas Especificos](https://gist.github.com/LuisMiSanVe/6b3c53cbfc4fcd75d816377bb6eb06b5), en la que se crea la clave AES con la información de tu equipo, por lo que si alguna persona indeseada roba esos ficheros, no podrían ser desencriptados, manteniendo tus datos sensibles a salvo.
 
-**Método de traducción de Lenguaje Natural a SQL:**  
-Este método mapea la estructura de la base de datos en un JSON que Gemini analiza para crear una consulta SQL, la cual es ejecutada por el servidor PostgreSQL directamente.  
+**[Método de traducción de Lenguaje Natural a SQL:](https://gist.github.com/LuisMiSanVe/2da8e2d932a06ef408b3ee8468d0d820)**  
+Este método mapea la estructura de la base de datos en un JSON que Gemini analiza ([con este prompt](https://gist.github.com/LuisMiSanVe/b189c8920d2dcedf5fd46485f3403d51)) para crear una consulta SQL, la cual es ejecutada por el servidor PostgreSQL directamente.  
 Ya que este método no mapea los valores de la base de datos el uso de tokens es menor, y los datos que devuelve son mas fiables pues es el mismo Servidor el que los devuelve. Sin embargo, no evita completamente los errores que cometa la IA. A veces, la consulta SQL fallará debido a que la IA se inventa columnas que no existen, en ese caso deberás comprobar la consulta generada para que identifiques el fallo.
 
 ## 🚀 Lanzamientos
