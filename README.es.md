@@ -25,10 +25,10 @@ Para que el programa funcione, necesiatarás un servidor PostgreSQL y una clave 
 
 ## 🛠️ Instalación
 
-Si no lo tienes, descarga [pgAdmin 4 desde su página ofical](https://www.pgadmin.org/download/).  
+En caso de no tenerlo, deberás descargar [pgAdmin 4 desde su página ofical](https://www.pgadmin.org/download/).  
 Ahora, crea el servidor y monta la base de datos con algunas tablas y valores.
 
-Después, obten tu clave de la API de Gemini yendo aqui: [Google AI Studio](https://aistudio.google.com/app/apikey). Asegurate de tener tu sesión de Google abierta, y encontes dale al botón que dice 'Crear clave de API' y sigue los pasos para crear tu proyecto de Google Cloud y conseguir tu clave de API. **Guardala en algún sitio seguro**.  
+Después, obten tu clave de la API de Gemini yendo aquí: [Google AI Studio](https://aistudio.google.com/app/apikey). Asegúrate de tener tu sesión de Google abierta, y entonces dale al botón que dice 'Crear clave de API' y sigue los pasos para crear tu proyecto de Google Cloud y conseguir tu clave de API. **Guárdala en algún sitio seguro**.  
 Google permite el uso gratuito de esta API sin añadir ninguna forma de pago, pero con algunas limitaciones.
 
 En Google AI Studio, puedes monitorizar el uso de la IA haciendo clic en 'Ver datos de uso' en la columna de 'Plan' en la tabla con todos tus proyectos. Recomiendo monitorizarla desde la pestaña de 'Cuota y límites del sistema' y ordenando por 'Porcentaje de uso actual', ya que es donde más información obtienes.
@@ -45,17 +45,17 @@ Estas Bases de Datos Mapeadas se guardan en tu disco por lo que siempre se carga
 
 Recuerda que las Bases de Datos Mapeadas solo se usan al hacer una solicitud a la IA, por lo que si estás modificando una sentencia y la ejecutas, esta correrá en el Servidor PostgreSQL que tengas configurado.
 
-Al hacer clic en 'Save' en la pantalla de Configuración de la  Base de  Datos o en la de Configuración de la clave de la API (si la caja de 'Remember' está marcada) un archivo se creará en la carpeta interna del programa para que la siguiente vez que se inicie, todos esos datos se carguen automaticamente.
+Al hacer clic en 'Save' en la pantalla de Configuración de la Base de Datos o en la de Configuración de la clave de la API (si la caja de 'Remember' está marcada) un archivo se creará en la carpeta interna del programa para que la siguiente vez que se inicie, todos esos datos se carguen automaticamente.
 > [!NOTE]
-> Se encripta los ficheros de configuración de la API Key y los datos de la BBDD usando AES con un [Método Basado en Sistemas Especificos](https://gist.github.com/LuisMiSanVe/6b3c53cbfc4fcd75d816377bb6eb06b5), en la que se crea la clave AES con la información de tu equipo, por lo que si alguna persona indeseada roba esos ficheros, no podrían ser desencriptados, manteniendo tus datos sensibles a salvo.
+> Los ficheros de configuración de la API Key y los datos de la BBDD se encriptan usando AES con un [Método Basado en Sistemas Especificos](https://gist.github.com/LuisMiSanVe/6b3c53cbfc4fcd75d816377bb6eb06b5), en la que se crea la clave AES con la información de tu equipo, por lo que si alguna persona indeseada roba esos ficheros, no podrían ser desencriptados, manteniendo tus datos sensibles a salvo.
 
 **[Método de traducción de Lenguaje Natural a SQL:](https://gist.github.com/LuisMiSanVe/2da8e2d932a06ef408b3ee8468d0d820)**  
 Este método mapea la estructura de la base de datos en un JSON que Gemini analiza ([con este prompt](https://gist.github.com/LuisMiSanVe/b189c8920d2dcedf5fd46485f3403d51)) para crear una consulta SQL, la cual es ejecutada por el servidor PostgreSQL directamente.  
-Ya que este método no mapea los valores de la base de datos el uso de tokens es menor, y los datos que devuelve son mas fiables pues es el mismo Servidor el que los devuelve. Sin embargo, no evita completamente los errores que cometa la IA. A veces, la consulta SQL fallará debido a que la IA se inventa columnas que no existen, en ese caso deberás comprobar la consulta generada para que identifiques el fallo.
+Ya que este método no mapea los valores de la base de datos el uso de tokens es menor, y los datos que devuelve son mas fiables pues es el mismo Servidor el que los devuelve. Sin embargo, no evita completamente los errores que cometa la IA. A veces, la consulta SQL fallará debido a que la IA inventa columnas que no existen, en ese caso deberás comprobar la consulta generada para que identifiques el fallo.
 
 ## 🚀 Lanzamientos
 Una versión será lanzada solo cuando se cumplan los siguientes puntos:\
-Nuevas funciones importantes y arreglos de fallos criticos causarán la salida inmediata de una nueva versión, mientras que otros cambios/arreglos menores deberán esperar una semana desde que se incluyeron en el repositorio antes de ser incluidos en la nueva versión, para que otros posibles cambios puedan ser añadidos tambien.
+Nuevas funciones importantes y arreglos de fallos criticos causarán la salida inmediata de una nueva versión, mientras que otros cambios o arreglos menores deberán esperar una semana desde que se incluyeron en el repositorio antes de ser incluidos en la nueva versión, para que otros posibles cambios puedan ser añadidos también.
 >[!NOTE]
 >Estos posibles nuevos cambios no alargarán la espera de la salida de la nueva versión a más de una semana.
 
@@ -74,6 +74,6 @@ El número de la versión seguirá este formato: \
   - [PostgreSQL](https://www.postgresql.org/) (16.3)
   - [pgAdmin 4](https://www.pgadmin.org/) (8.9)
   - Gemini API Key (2.0 Flash)
-  - [FreeIcons](https://freeicons.io/) (Fuente original de los iconos, luego retocados por mi)
+  - [FreeIcons](https://freeicons.io/) (Fuente original de los iconos, luego retocados por mí)
   - [Microsoft Visual Studio Installer Projects 2022](https://marketplace.visualstudio.com/items?itemName=VisualStudioClient.MicrosoftVisualStudio2022InstallerProjects) (2.0.1)
 - IDE Recomendado: [Visual Studio](https://visualstudio.microsoft.com/) 2022
