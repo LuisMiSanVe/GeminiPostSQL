@@ -643,11 +643,10 @@
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(869, 653);
-            Controls.Add(gb_map);
             Controls.Add(gb_loading);
+            Controls.Add(gb_map);
             Controls.Add(gb_key);
             Controls.Add(gb_database);
-            Controls.Add(Btn_Copy);
             Controls.Add(pcbx_icon);
             Controls.Add(llbl_github);
             Controls.Add(btn_dbsettings);
@@ -661,6 +660,7 @@
             Controls.Add(btn_tweak);
             Controls.Add(btn_mapdb);
             Controls.Add(pcbx_background);
+            Controls.Add(Btn_Copy);
             DoubleBuffered = true;
             FormBorderStyle = FormBorderStyle.FixedToolWindow;
             Icon = (Icon)resources.GetObject("$this.Icon");
