@@ -11,7 +11,11 @@
 [![image](https://img.shields.io/badge/Visual_Studio-5C2D91?style=for-the-badge&logo=visual%20studio&logoColor=white)](https://visualstudio.microsoft.com/)
 
 >[!NOTE]
-> This is the WinForms version meant for client use. There is a [REST API](https://github.com/LuisMiSanVe/GeminiPostSQL_API/tree/main) version meant for servers with Swagger, a [ChatBot](https://github.com/LuisMiSanVe/GeminiPostSQL_ChatBot/tree/main) in Blazor for web clients and a [NuGet](https://github.com/LuisMiSanVe/GeminiPostSQL_NuGet/tree/main) package for developers.
+> Check out other versions of this program:
+>- [REST API](https://github.com/LuisMiSanVe/GeminiPostSQL_API/tree/main) 
+>- [ChatBot](https://github.com/LuisMiSanVe/GeminiPostSQL_ChatBot/tree/main)
+>- [NuGet](https://github.com/LuisMiSanVe/GeminiPostSQL_NuGet/tree/main)
+>- [Android](https://github.com/LuisMiSanVe/GeminiLiteSQL/tree/main)
 
 This WinForms program uses Google's AI 'Gemini 2.0 Flash' to make queries to PostgreSQL databases.  
 The AI interprets natural language into SQL queries using one method, with its pros and cons.

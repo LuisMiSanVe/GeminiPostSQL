@@ -11,7 +11,11 @@
 [![image](https://img.shields.io/badge/Visual_Studio-5C2D91?style=for-the-badge&logo=visual%20studio&logoColor=white)](https://visualstudio.microsoft.com/)
 
 >[!NOTE]
-> Esta es la versión de WinForms pensada para ser usada como cliente. Hay una versión de [REST API](https://github.com/LuisMiSanVe/GeminiPostSQL_API/blob/main/README.es.md) pensada para su uso en servidores con Swagger, un [ChatBot](https://github.com/LuisMiSanVe/GeminiPostSQL_ChatBot/tree/main) de Blazor como cliente web y un paquete [NuGet](https://github.com/LuisMiSanVe/GeminiPostSQL_NuGet/tree/main) para desarrolladores.
+> Dale un vistazo a las otras versiones del programa:
+>- [REST API](https://github.com/LuisMiSanVe/GeminiPostSQL_API/tree/main) 
+>- [ChatBot](https://github.com/LuisMiSanVe/GeminiPostSQL_ChatBot/tree/main)
+>- [NuGet](https://github.com/LuisMiSanVe/GeminiPostSQL_NuGet/tree/main)
+>- [Android](https://github.com/LuisMiSanVe/GeminiLiteSQL/tree/main)
 
 Este WinForms usa la IA de Google 'Gemini 2.0 Flash' para generar consultas a bases de datos PostgreSQL.  
 La IA convierte lenguaje natural a consultas SQL usando un método con sus ventajas y desventajas.
