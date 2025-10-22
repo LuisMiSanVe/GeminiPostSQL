@@ -78,6 +78,7 @@ El número de la versión seguirá este formato: \
   - [PostgreSQL](https://www.postgresql.org/) (16.3)
   - [pgAdmin 4](https://www.pgadmin.org/) (8.9)
   - Gemini API Key (2.0 Flash)
+  - Pantalla de carga diseñada por [mi esposa](https://github.com/meowwan)
   - [FreeIcons](https://freeicons.io/) (Fuente original de los iconos, luego retocados por mí)
   - [Microsoft Visual Studio Installer Projects 2022](https://marketplace.visualstudio.com/items?itemName=VisualStudioClient.MicrosoftVisualStudio2022InstallerProjects) (2.0.1)
 - IDE Recomendado: [Visual Studio](https://visualstudio.microsoft.com/) 2022
